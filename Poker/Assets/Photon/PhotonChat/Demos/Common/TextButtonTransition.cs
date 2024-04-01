@@ -2,7 +2,7 @@
 // <copyright file="TextButtonTransition.cs" company="Exit Games GmbH">
 // </copyright>
 // <summary>
-//  Use this on Button texts to have some color transition on the text as well without corrupting button's behaviour.
+//  Use this on Button texts to have some color transition on the Text as well without corrupting button's behaviour.
 // </summary>
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace Photon.Chat.UtilityScripts
 {
 
 	/// <summary>
-	/// Use this on Button texts to have some color transition on the text as well without corrupting button's behaviour.
+	/// Use this on Button texts to have some color transition on the Text as well without corrupting button's behaviour.
 	/// </summary>
 	[RequireComponent(typeof(Text))]
 	public class TextButtonTransition : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler

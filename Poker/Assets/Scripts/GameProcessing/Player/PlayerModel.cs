@@ -31,6 +31,8 @@ namespace Players
         public ObservableVariable<int> Rate { get; private set; }
         public ObservableVariable<bool> Folded { get; private set; }
         public ObservableVariable<int> RaiseSum { get; private set; }
+
+
         public int LastAmountMoney { get; set; }
 
         public PlayerState CurrentState { get; set; }

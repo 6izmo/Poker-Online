@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Create room
+  m_text: PLAY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 87989f52eda51cf40976b5a627286ff4, type: 2}
   m_sharedMaterial: {fileID: 6111488291897277072, guid: 87989f52eda51cf40976b5a627286ff4, type: 2}
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.9
-  m_fontSizeBase: 44.9
+  m_fontSize: 65.61
+  m_fontSizeBase: 65.61
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -143,7 +143,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5525842453936759201}
-  - component: {fileID: 4041603285155909448}
   - component: {fileID: 8590773776327465236}
   - component: {fileID: 6800588532255650038}
   - component: {fileID: 271166557966560281}
@@ -174,19 +173,6 @@ RectTransform:
   m_AnchoredPosition: {x: -278.5382, y: 161.72449}
   m_SizeDelta: {x: 414.3504, y: 104.551}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4041603285155909448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8242067351390979457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4815278ef6cbceb40943eee8b68b1f67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inputField: {fileID: 0}
 --- !u!222 &8590773776327465236
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -208,15 +194,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15686275, g: 0.15686275, b: 0.15686275, a: 1}
+  m_Color: {r: 0.9292453, g: 0.96132666, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8174901dff2facb4583e976f866ae424, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: baafe8c7f6e1b5d449295e616f5ed5a0, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

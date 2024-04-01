@@ -59,7 +59,8 @@ namespace Cards
                 elapsedTime += Time.deltaTime;
                 await Task.Yield();
             }
-            transform.localEulerAngles = neededRotation; 
+            transform.localEulerAngles = neededRotation;
+            await Task.CompletedTask;
         }
 
         public void OnShowdown(CardModel cardModel) => photonView.RPC("ShowCard", RpcTarget.All, cardModel);

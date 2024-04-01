@@ -541,7 +541,7 @@ namespace Photon.Chat.Demo
         {
             if (channelName.Equals(this.selectedChannelName))
             {
-                // update text
+                // update Text
                 this.ShowChannel(this.selectedChannelName);
             }
         }

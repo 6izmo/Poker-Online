@@ -2,7 +2,7 @@
 // <copyright file="TextToggleIsOnTransition.cs" company="Exit Games GmbH">
 // </copyright>
 // <summary>
-//  Use this on Button texts to have some color transition on the text as well without corrupting button's behaviour.
+//  Use this on Button texts to have some color transition on the Text as well without corrupting button's behaviour.
 // </summary>
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace Photon.Chat.UtilityScripts
 {
 
 	/// <summary>
-	/// Use this on toggles texts to have some color transition on the text depending on the isOn State.
+	/// Use this on toggles texts to have some color transition on the Text depending on the isOn State.
 	/// </summary>
 	[RequireComponent(typeof(Text))]
 	public class TextToggleIsOnTransition : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler

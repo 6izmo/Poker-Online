@@ -32,7 +32,7 @@ namespace Cards
 
         public Sprite GetOwnSprite() => CardData.GetSprite(_cardModel);
 
-        public void OnPhotonInstantiate(PhotonMessageInfo info)
+        public async void OnPhotonInstantiate(PhotonMessageInfo info)
         {
             object[] instantiationData = info.photonView.InstantiationData;
             int operationId = (int)instantiationData[0];
@@ -43,7 +43,7 @@ namespace Cards
             if (operationId == (int)EventCode.TableCard)
             {
                 destinationPosiiton = (Vector2)instantiationData[2];
-                SetPosition(startPosition, destinationPosiiton, angle);
+                await SetPosition(startPosition, destinationPosiiton, angle);
                 return;
             }
 
@@ -55,10 +55,10 @@ namespace Cards
             string id = photonView.InstantiationId.ToString();
             int posIndex = int.Parse(id.Substring(id.Length - 1));
             destinationPosiiton = _cardData.GetCardPosition(actorPlayerId, posIndex - 1);
-            SetPosition(startPosition, destinationPosiiton, angle);
+            await SetPosition(startPosition, destinationPosiiton, angle);
         }
 
-        public async void SetPosition(Vector2 startPosition, Vector2 destinationPosition, float angle)
+        public async Task SetPosition(Vector2 startPosition, Vector2 destinationPosition, float angle)
         {
             float elapsedTime = 0f;
             float animaitonRotateTime = 0.55f;
@@ -74,6 +74,8 @@ namespace Cards
                 await Task.Yield();
             }
             transform.rotation = Quaternion.Euler(0, 0, angle);
+            transform.position = destinationPosition;
+            await Task.CompletedTask;
         }
 
         public void Dispose() => PhotonNetwork.RemoveCallbackTarget(this);

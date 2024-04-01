@@ -8,15 +8,20 @@ public class PhotonConnecter : MonoBehaviourPunCallbacks
     [Space]
     [SerializeField] private string _gameVersion = "0.0.1";
 
-    private void Start()
+    private void Awake() => DontDestroyOnLoad(this);
+
+    public void PlayerConect(string nickname)
     {
         if (PhotonNetwork.IsConnected)
             return;
 
-        PhotonNetwork.NickName = "Players - " + UnityEngine.Random.Range(0, 100);
+        if (nickname == null)
+            nickname = $"Player_{new System.Random().Next(0, 100)}";
+
+        PhotonNetwork.NickName = nickname;
 
         PhotonNetwork.GameVersion = _gameVersion;
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = false;
 
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.ConnectToRegion($"{_regionToken}");
@@ -24,16 +29,17 @@ public class PhotonConnecter : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        print(PhotonNetwork.NickName + " - вы подключились к серверу");
-        print(PhotonNetwork.CloudRegion);
-
         if (!PhotonNetwork.InLobby)
             PhotonNetwork.JoinLobby();  
     }
 
-    public override void OnJoinedRoom() => PhotonNetwork.LoadLevel("Game");
+    public override void OnJoinedRoom() => SceneTransition.SwitchToScene("Game");
 
-    public override void OnDisconnected(DisconnectCause cause) => print("Вы отключились");
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        print("Вы отключились - " + cause);
+        PhotonNetwork.OpRemoveCompleteCacheOfPlayer(PhotonNetwork.LocalPlayer.ActorNumber);
+    }
 }
 
 public enum RegionToken
