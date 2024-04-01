@@ -7,6 +7,7 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Move = Players.PlayerModel.PlayerMove;
 using State = Players.PlayerModel.PlayerState;
+using UnityEngine;
 
 public class MoveHandler : IOnEventCallback, IDisposable
 {
@@ -54,6 +55,7 @@ public class MoveHandler : IOnEventCallback, IDisposable
                 break;
             case Move.AllIn:
                 _matchPresenter.UpdatePlayerRatePun(RpcTarget.All, player, localModel.Money.Value);
+                _matchPresenter.SendMessagePun("ALL IN", new ColorModel(Color.yellow));
                 localModel.Raises(localModel.Money.Value);
                 break;
         }

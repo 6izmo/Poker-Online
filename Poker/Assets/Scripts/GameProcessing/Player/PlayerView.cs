@@ -40,9 +40,9 @@ namespace Players
             _playerModel = playerModel;
 
             _moneyText.Activate();
-            _checkCardsButton.Activate();
             _commandPanel.Activate();
             _chipsImage.Activate();
+            _checkCardsButton.Deactivate();
 
             _moneyText.text = $"{_playerModel.Money}$";
 
@@ -57,7 +57,7 @@ namespace Players
             _minusButton.onClick.AddListener(delegate { OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind); });
         }
 
-        public void HideChechCards(bool active) => _checkCardsButton.gameObject.SetActive(!active);
+        public void ActiveCheckCards(bool active) => _checkCardsButton.gameObject.SetActive(active);
 
 		public void UpdateRaiseButton(int sum) => _raiseText.text = $"RAISE({sum})";
 

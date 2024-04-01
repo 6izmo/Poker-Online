@@ -2,7 +2,6 @@ using Bank;
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
-using System.Threading.Tasks;
 
 namespace Players
 {
@@ -22,7 +21,8 @@ namespace Players
 
             _playerModel.RaiseSum.OnChanged += _playerView.UpdateRaiseButton;
             _playerModel.Money.OnChanged += _playerView.UpdateMoneyText;
-            _playerModel.Folded.OnChanged += _playerView.HideChechCards;
+            _playerModel.Folded.OnChanged += (active) =>  _playerView.ActiveCheckCards(!active);
+            _playerModel.OnGotCards += _playerView.ActiveCheckCards;
 
             _playerView.OnRaiseChanged += SetRaiseValue;
             _playerView.OnTurnedOver += TurnOverCards;

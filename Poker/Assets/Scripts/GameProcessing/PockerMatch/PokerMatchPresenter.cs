@@ -19,6 +19,8 @@ namespace PokerMatch
         private BankPresenter _bankPresenter;
         private Dictionary<Player, PlayerInfoView> _playersInfo;
 
+        private const int _delayOperation = 1000;
+
         public void Init(PokerMatchModel model, PokerMatchView view, BankPresenter bankPreseter, Dealer dealer)
         {
             _dealer = dealer;
@@ -43,7 +45,7 @@ namespace PokerMatch
             _bankPresenter.ActivateBank();
             _playersInfo = playersInfo;
             SetPlayerInPlaces();
-            await Task.Delay(1000);
+            await Task.Delay(_delayOperation);
             _matchModel.SetMatchPhase(Phase.NewDistribution);  
         }
 
@@ -102,10 +104,10 @@ namespace PokerMatch
             CombinationReader reader = new();
             Combination combination = await reader.GetCombination(localModel, _matchModel.TableCards);
             photonView.RPC("AddPlayerCombination", RpcTarget.All, PhotonNetwork.LocalPlayer, combination);
-            await Task.Delay(1000);
+            await Task.Delay(_delayOperation);
 
             Player player = _matchModel.GetWinner();
-            Debug.Log($"Winner:{player.NickName}");
+            SendMessagePun("Winner: \n" + player.NickName, new ColorModel(Color.blue));
             await _bankPresenter.GiveAwayTheWinnings(_matchModel.GetPlayerModel(player));
 
             if (!localModel.Folded.Value)
@@ -113,8 +115,7 @@ namespace PokerMatch
                 for (int i = 0; i < localModel.Cards.Count; i++)
                     localModel.Cards[i].Showdown();
             }
-            await Task.Delay(1000);
-            Debug.Log($"New");
+            await Task.Delay(_delayOperation);
             NewDistribution();          
         }
 
@@ -188,6 +189,11 @@ namespace PokerMatch
 
 		[PunRPC]
         public void AddPlayerModel(Player player, PlayerModel playerModel) => _matchModel.AddPlayerModel(player, playerModel);
+
+        public void SendMessagePun(string message, ColorModel color) => photonView.RPC("SendEventMessage", RpcTarget.All, message, color);
+
+        [PunRPC]
+        public void SendEventMessage(string message, ColorModel color) => _matchView.DisplayMessage(message, color);
 
         [PunRPC]
         public void RemovePlayer(Player player) => _matchModel.RemovePlayer(player); 

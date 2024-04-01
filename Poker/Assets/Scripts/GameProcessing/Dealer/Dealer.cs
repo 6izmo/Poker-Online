@@ -14,7 +14,7 @@ namespace PokerMatch
 
         private CardDeck _cardDeck;
 
-		private int _timeDelay = 500;
+		private int _timeDelay = 750;
         private int _currentCountCard = 0;
 
         public async void StartDealing(CardData cardData)

@@ -450,10 +450,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -496,11 +496,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1908010488}
   - {fileID: 660640330}
   - {fileID: 1889708037}
   - {fileID: 1571794948}
   - {fileID: 1804934619}
-  - {fileID: 1908010488}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1084,6 +1084,7 @@ MonoBehaviour:
   _musicButton: {fileID: 1876675967}
   _infoButton: {fileID: 135354556}
   _inputField: {fileID: 808478654}
+  _title: {fileID: 1889708038}
 --- !u!1 &1618571711
 GameObject:
   m_ObjectHideFlags: 0
@@ -1558,7 +1559,7 @@ GameObject:
   - component: {fileID: 1889708039}
   - component: {fileID: 1889708038}
   m_Layer: 5
-  m_Name: Text (Poker)
+  m_Name: Title (Poker)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1573,14 +1574,14 @@ RectTransform:
   m_GameObject: {fileID: 1889708036}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.325, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 395850951}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -264.99994}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 2, y: 259}
   m_SizeDelta: {x: 873.62, y: 163.53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1889708038
@@ -1595,7 +1596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 52d0bb18ca28e5c4c8cc82db8e55e787, type: 2}
   m_Color: {r: 0.0141509175, g: 0.41289163, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1604,7 +1605,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: e3b532f56659fd84f8afee55f0bb7bab, type: 3}
+    m_Font: {fileID: 12800000, guid: 74b186f6b3dbff24da4862cd2423932f, type: 3}
     m_FontSize: 127
     m_FontStyle: 1
     m_BestFit: 0
@@ -1633,13 +1634,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 395850951}
     m_Modifications:
+    - target: {fileID: 1304201445692609055, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 1535213930274845564, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
       propertyPath: m_Name
       value: SceneTransitoin
       objectReference: {fileID: 0}
     - target: {fileID: 2094650000214676524, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9017895718991406257, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
       propertyPath: m_Pivot.x
@@ -2134,7 +2139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.44313717, b: 1, a: 1}
+  m_Color: {r: 0.02745098, g: 0.33333334, b: 0.7921569, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2279,7 +2284,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 33
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

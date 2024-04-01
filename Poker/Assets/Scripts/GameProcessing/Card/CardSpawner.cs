@@ -18,7 +18,7 @@ namespace Cards
             PhotonNetwork.AddCallbackTarget(this);
         }
 
-        public void OnEvent(EventData photonEvent)
+        public async void OnEvent(EventData photonEvent)
         {
             if (photonEvent.Code != (int)EventCode.Dealing)
                 return;
@@ -41,7 +41,7 @@ namespace Cards
 
             CardPresenter cardPresenter = cardObject.GetComponent<CardPresenter>();
             cardPresenter.Init(cardModel);
-            cardPresenter.SetPosition(_pokerModel.CardData.CardDeckPosition, localPositon, 0);
+            await cardPresenter.SetPosition(_pokerModel.CardData.CardDeckPosition, localPositon, 0);
 
             PlayerModel playerModel = _pokerModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
             playerModel.AddCard(cardPresenter);

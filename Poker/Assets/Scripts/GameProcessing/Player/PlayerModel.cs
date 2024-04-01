@@ -28,10 +28,14 @@ namespace Players
         public List<CardPresenter> Cards => _cardsInfo;
 
         public ObservableVariable<int> Money { get; private set; }
+
         public ObservableVariable<int> Rate { get; private set; }
+
         public ObservableVariable<bool> Folded { get; private set; }
+
         public ObservableVariable<int> RaiseSum { get; private set; }
 
+        public event Action<bool> OnGotCards;
 
         public int LastAmountMoney { get; set; }
 
@@ -50,7 +54,11 @@ namespace Players
         public void AddCard(CardPresenter presenter)
         {
             if(!_cardsInfo.Contains(presenter))
+            {
                 _cardsInfo.Add(presenter);
+                if (_cardsInfo.Count == 2)
+                    OnGotCards?.Invoke(true);
+            }
         }
 
         public void Raises(int value)

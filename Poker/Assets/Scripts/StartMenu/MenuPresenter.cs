@@ -7,7 +7,7 @@ namespace Menu
             menuView.Init();
 
             menuView.OnPlayButtonClicked += LoadRoomsScene;
-            menuView.OnInputName += photonConnecter.PlayerConect;
+            menuView.OnInputedName += photonConnecter.PlayerConect;
         }
 
         private void LoadRoomsScene() => SceneTransition.SwitchToScene("Rooms");

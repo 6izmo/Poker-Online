@@ -13,17 +13,19 @@ namespace Menu
         [SerializeField] private Button _infoButton;
         [Space]
         [SerializeField] private TMP_InputField _inputField;
+        [Space]
+        [SerializeField] private Text _title;
 
         public event Action OnPlayButtonClicked;
-        public event Action<string> OnInputName;
+        public event Action<string> OnInputedName;
 
         public void Init()
         {
-            _playButton.onClick.AddListener(delegate { OnPlayButtonClicked?.Invoke(); });
-            _okButton.onClick.AddListener(delegate { OnInputName?.Invoke(_inputField.text); ActivateMainUI(); });
+            _playButton.onClick.AddListener(delegate { OnPlayButtonClicked?.Invoke(); _title.Deactivate(); });
+            _okButton.onClick.AddListener(delegate { OnInputedName?.Invoke(_inputField.text); SwitchPanel(); });
         }
 
-        private void ActivateMainUI()
+        private void SwitchPanel()
         {
             _inputField.Deactivate();
             _okButton.Deactivate();

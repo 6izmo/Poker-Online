@@ -77,6 +77,7 @@ namespace PokerMatch
             PhotonPeer.RegisterType(typeof(CardModel), 4, CardModel.Serialize, CardModel.Deserialize);
             PhotonPeer.RegisterType(typeof(PlayerModel), 5, PlayerModel.Serialize, PlayerModel.Deserialize);
             PhotonPeer.RegisterType(typeof(Combination), 6, Combination.Serialize, Combination.Deserialize);
+            PhotonPeer.RegisterType(typeof(ColorModel), 7, ColorModel.Serialize, ColorModel.Deserialize);
         }
 
         private void OnDisable() => _playerListPresenter.OnAllPlayersReady -= StartPokerMatch;
