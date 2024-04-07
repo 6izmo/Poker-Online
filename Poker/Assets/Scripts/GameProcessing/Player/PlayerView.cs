@@ -30,10 +30,12 @@ namespace Players
         [SerializeField] private Button _minusButton;
         [SerializeField] private Button _callButton;
         [SerializeField] private Button _foldButton;
- 
+        [SerializeField] private Button _leaveButton;
+
         public event Action OnTurnedOver;
         public event Action<Move> OnMoved;
         public event Action<int> OnRaiseChanged;
+        public event Action OnLeaved;
 
         public void Init(PlayerModel playerModel)
         {
@@ -52,6 +54,7 @@ namespace Players
             _raiseButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Raise); });
             _allInButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.AllIn); });
             _foldButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Fold); });
+            _leaveButton.onClick.AddListener(delegate { OnLeaved?.Invoke(); });
 
             _plusButton.onClick.AddListener(delegate { OnRaiseChanged(_playerModel.RaiseSum.Value + BankModel.BigBlind); });
             _minusButton.onClick.AddListener(delegate { OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind); });

@@ -35,11 +35,9 @@ public class PhotonConnecter : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom() => SceneTransition.SwitchToScene("Game");
 
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        print("Вы отключились - " + cause);
-        PhotonNetwork.OpRemoveCompleteCacheOfPlayer(PhotonNetwork.LocalPlayer.ActorNumber);
-    }
+    public override void OnLeftRoom() => SceneTransition.SwitchToScene("Rooms");
+
+    public override void OnDisconnected(DisconnectCause cause) => PhotonNetwork.OpRemoveCompleteCacheOfPlayer(PhotonNetwork.LocalPlayer.ActorNumber);
 }
 
 public enum RegionToken

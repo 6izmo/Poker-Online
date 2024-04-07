@@ -27,6 +27,7 @@ namespace Players
             _playerView.OnRaiseChanged += SetRaiseValue;
             _playerView.OnTurnedOver += TurnOverCards;
             _playerView.OnMoved += OnMove;
+            _playerView.OnLeaved += Leave;
         }
            
         private void SetRaiseValue(int value)
@@ -50,5 +51,7 @@ namespace Players
             RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
             PhotonNetwork.RaiseEvent((byte)EventCode.Move, content, eventOptions, SendOptions.SendUnreliable);
         }
+
+        private void Leave() => PhotonNetwork.LeaveRoom();
     }
 }
