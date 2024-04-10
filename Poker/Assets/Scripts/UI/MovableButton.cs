@@ -4,12 +4,16 @@ using UnityEngine.EventSystems;
 
 namespace UIVisual
 {
-    public class MovableButton : AppearSmoothly, IPointerEnterHandler, IPointerExitHandler
+    public class MovableButton : AppearSmoothly, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
     {
         [SerializeField] private Vector3 _endScaleValue;
 
-        public void OnPointerEnter(PointerEventData eventData) => transform.DOScale(_endScaleValue, Duration);
+        private void ToDefault () => Tween = transform.DOScale(DefaultScale, Duration);
 
-        public void OnPointerExit(PointerEventData eventData) => transform.DOScale(DefaultScale, Duration);
+		public void OnPointerEnter(PointerEventData eventData) => Tween = transform.DOScale(_endScaleValue, Duration);
+
+		public void OnPointerDown(PointerEventData eventData) => ToDefault();
+
+		public void OnPointerExit(PointerEventData eventData) => ToDefault();
     }
 }

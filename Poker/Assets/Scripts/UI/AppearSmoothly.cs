@@ -13,7 +13,7 @@ namespace UIVisual
 
         private void OnEnable()
         {
-            transform.localScale = Vector3.zero;  
+            transform.localScale = Vector3.zero;
             Tween = transform.DOScale(DefaultScale, Duration);
         }
 

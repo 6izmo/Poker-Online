@@ -1,4 +1,3 @@
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
@@ -23,10 +22,10 @@ public class PlayerInfoView : MonoBehaviour
 
     public void SetPLayerInfo(Player player) => _nickName.text = player.NickName;
 
-    public void ChangeColorText()
+    public void ChangeColorText(Color color)
     {
-        Color color = _nickName.color == Color.white ? Color.green : Color.white;
-        _nickName.color = color;
+        Color newColor = _nickName.color == Color.white ? color : Color.white;
+        _nickName.color = newColor;
     }
 
 	public void SetPosition(PlayerItemPosition position, RectTransform parent)

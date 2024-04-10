@@ -1,4 +1,5 @@
 using TMPro;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ namespace PlayerList
 {
     public class PlayerListView : MonoBehaviour
     {
+        [SerializeField] private Button _leaveButton;
         [SerializeField] private Button _readyButton;
         [SerializeField] private Transform _contentView;
         [SerializeField] private GameObject _listPanel;
@@ -16,14 +18,17 @@ namespace PlayerList
         private Image _image;
         private bool _readyCondition = false;
 
-        public void Init(PlayerListPresenter presenter) => _presenter = presenter;
+		public event Action OnLeaved;
+
+		public void Init(PlayerListPresenter presenter) => _presenter = presenter;
 
         private void Awake()
         {
             _image = GetComponent<Image>();
             _readyButton.onClick.AddListener(() => OnReadyClick());
+			_leaveButton.onClick.AddListener(() => OnLeaved?.Invoke());
 
-            _readyConditionText.text = "Unready";
+			_readyConditionText.text = "Unready";
             _readyConditionText.color = Color.red;
         }
 

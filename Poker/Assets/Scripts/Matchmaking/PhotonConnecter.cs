@@ -1,14 +1,13 @@
+using Utilities;
 using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
 
-public class PhotonConnecter : MonoBehaviourPunCallbacks
+public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter> 
 {
     [SerializeField] private RegionToken _regionToken;
     [Space]
     [SerializeField] private string _gameVersion = "0.0.1";
-
-    private void Awake() => DontDestroyOnLoad(this);
 
     public void PlayerConect(string nickname)
     {

@@ -14,7 +14,11 @@ namespace PlayerList
 
         public event Action<Dictionary<Player, PlayerInfoView>> OnAllPlayersReady;
 
-        public void Init(PlayerListModel model) => _playerListModel = model;
+        public void Init(PlayerListModel model, PlayerListView view)
+        {
+            _playerListModel = model;
+            view.OnLeaved += Leave;
+        }
 
         private void Start()
         {
@@ -29,7 +33,9 @@ namespace PlayerList
             photonView.RPC("CheckReadyConditions", RpcTarget.All);
         }
 
-        [PunRPC]
+		private void Leave() => PhotonNetwork.LeaveRoom();
+
+		[PunRPC]
         public void CheckReadyConditions()
         {
             if (!_playerListModel.GetPlayersReadyCondition())
