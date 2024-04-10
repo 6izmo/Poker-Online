@@ -9,20 +9,16 @@ namespace Settings
 		[SerializeField] private AudioMixer _musicMixer;
 		[SerializeField] private AudioMixer _effectsMixer;
 		private SettingsView _view;
+		private SettingsModel _model;
 
 		public void Init(SettingsView view, SettingsModel model)
 		{
 			_view = view;
+			_model = model;
 
 			_view.OnClosed += SaveAudio;
 			_view.OnEffectsChanged += ChangeEffectsMixer;
-			_view.OnMusicChanged += ChangeMusicMixer; 
-			
-			if(model != null)
-			{
-				ChangeMusicMixer(model.Music);
-				ChangeEffectsMixer(model.Effects);
-			}
+			_view.OnMusicChanged += ChangeMusicMixer;
 		}
 
 		private void ChangeMusicMixer(float value) => _musicMixer.SetFloat("MusicVolume", Mathf.Lerp(-64, 0, value));
@@ -31,8 +27,15 @@ namespace Settings
 
 		private void SaveAudio(float music, float audio)
 		{
-			SettingsModel settingsModel = new SettingsModel(music, audio);
-			SettingsSaveLoadUtils.SaveSettingsData(settingsModel);
+			_model.Music = music;
+			_model.Effects = audio;
+			SettingsSaveLoadUtils.SaveSettingsData(_model);
+		}
+
+		public void OnConnectedPlayer()
+		{
+			_model.IsConnected = true;
+			SettingsSaveLoadUtils.SaveSettingsData(_model);
 		}
 
 		private void OnDisable()
@@ -40,6 +43,12 @@ namespace Settings
 			_view.OnClosed -= SaveAudio;
 			_view.OnEffectsChanged -= ChangeEffectsMixer;
 			_view.OnMusicChanged -= ChangeMusicMixer;
+		}
+
+		private void OnApplicationQuit()
+		{
+			_model.IsConnected = false;
+			SettingsSaveLoadUtils.SaveSettingsData(_model);
 		}
 	}
 }

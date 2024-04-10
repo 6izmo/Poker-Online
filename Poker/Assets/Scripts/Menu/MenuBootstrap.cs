@@ -13,14 +13,14 @@ namespace Menu
 		[SerializeField] private SettingsPresenter _settingsPresenter;
 		[SerializeField] private SettingsView _settingsView;   
 
-		private void Awake()
+		private void Start()
         {
-            new MenuPresenter(_menuView, _photonConnecter);
-
 			SettingsModel settings = SettingsSaveLoadUtils.LoadSettingsData();
-			print(settings);
-			_settingsView.Init(settings);
 			_settingsPresenter.Init(_settingsView, settings);
+			_settingsView.Init(settings);
+
+			bool isConnected = settings == null ? false : settings.IsConnected;
+			new MenuPresenter(_menuView, _photonConnecter, _settingsPresenter, isConnected);
 		}
 	}
 }

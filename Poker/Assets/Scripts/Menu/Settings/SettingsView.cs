@@ -28,7 +28,7 @@ namespace Settings
 
 		private const float _progressStep = 0.2f;
 		public event Action<float> OnMusicChanged;
-		public event Action<float> OnEffectsChanged;
+		public event Action<float> OnEffectsChanged; 
 		public event Action<float, float> OnClosed;
 
 		public void Init(SettingsModel settings)
@@ -47,7 +47,7 @@ namespace Settings
 			SetEffectsProgress(effectsValue);
 		}
 
-		public void SetMusicProgress(float value = 1f)
+		public void SetMusicProgress(float value)
 		{
 			_musicProgressbar.fillAmount = value;
 			switch (_musicProgressbar.fillAmount)
@@ -69,7 +69,7 @@ namespace Settings
 			OnMusicChanged?.Invoke(_musicProgressbar.fillAmount);
 		}
 
-		public void SetEffectsProgress(float value = 1f)
+		public void SetEffectsProgress(float value)
 		{
 			_effectsProgressbar.fillAmount = value;
 			switch (_effectsProgressbar.fillAmount)

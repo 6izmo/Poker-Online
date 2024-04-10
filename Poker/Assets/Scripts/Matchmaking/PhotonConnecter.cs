@@ -9,7 +9,7 @@ public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter>
     [Space]
     [SerializeField] private string _gameVersion = "0.0.1";
 
-    public void PlayerConect(string nickname)
+    public void PlayerConnect(string nickname)
     {
         if (PhotonNetwork.IsConnected)
             return;

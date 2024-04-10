@@ -19,12 +19,15 @@ namespace Menu
 
         public event Action OnPlayButtonClicked;
         public event Action<string> OnInputedName;
-
-        public void Init()
+            
+        public void Init(bool isConnected)
         {
             _playButton.onClick.AddListener(delegate { OnPlayButtonClicked?.Invoke(); _title.Deactivate(); });
-            _okButton.onClick.AddListener(delegate { OnInputedName?.Invoke(_inputField.text); SwitchPanel(); });
-        }
+            _okButton.onClick.AddListener(delegate { SwitchPanel(); OnInputedName?.Invoke(_inputField.text); });
+
+            if (isConnected)
+                SwitchPanel();
+		}
 
         private void SwitchPanel()
         {

@@ -3,15 +3,11 @@ namespace Settings
     [System.Serializable]
     public class SettingsModel
     {
-        public float Music { get; private set; }
+		public bool IsConnected { get; set; }
 
-		public float Effects { get; private set; }
+		public float Music { get; set; }
 
-        public SettingsModel(float music, float effects)
-        {
-            Music = music;
-			Effects = effects;
-		}
+		public float Effects { get; set; }
 
 		public static Newtonsoft.Json.JsonSerializerSettings SerializeSettings()
 		{
