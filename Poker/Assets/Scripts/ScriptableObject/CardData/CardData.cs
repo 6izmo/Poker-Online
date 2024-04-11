@@ -9,18 +9,29 @@ namespace Cards {
     [CreateAssetMenu(fileName = "CardData")]
     public class CardData : ScriptableObject
     {
-        [SerializeField] private CardView _cardViewPrefab;
+		[Header("CardInfo")]
+		[SerializeField] private CardView _cardViewPrefab;
         [SerializeField] private CardView _tableCardPrefab;
         [SerializeField] private Vector2 _cardDeckPosition;
         [SerializeField] private List<CardList> _cardList = new();
         [SerializeField] private List<PlayerCardPositions> _playerCardsPos = new();
         [SerializeField] private List<Vector2> _tablePositions = new();
 
-        public CardView CardViewPrefab => _cardViewPrefab;
+        [Header("CardAudio")]
+        [SerializeField] private AudioClip _cardOpen;
+        [SerializeField] private AudioClip _cardDeal;
+
+		public CardView CardViewPrefab => _cardViewPrefab;
+
         public CardView TableCardPrefab => _tableCardPrefab;
+
         public Vector2 CardDeckPosition => _cardDeckPosition;
 
-        private static Dictionary<CardSuits, List<Sprite>> _allCardInfo = new();
+        public AudioClip CardDeal => _cardDeal;
+
+        public AudioClip CardOpen => _cardOpen;
+
+		private static Dictionary<CardSuits, List<Sprite>> _allCardInfo = new();
         private LinkedList<PlayerCardPositions> _positionsList;
 
         public void Init()

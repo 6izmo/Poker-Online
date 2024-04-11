@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PokerMatch
 {
@@ -9,12 +10,24 @@ namespace PokerMatch
         [Header("UI")]
         [SerializeField] private RectTransform _allPlayersParent;
         [Space]
-        [Header("Event Text")]
-        [SerializeField] private Vector3 _textScale;
-        [SerializeField, Range (0f, 2f)] private float _scaleDuration;
-        [SerializeField, Range(0f, 3f)] private float _textDuration;
+        [SerializeField] private Button _chatButton;
+        [SerializeField] private Image _cross;
+		[SerializeField] private RectTransform _chat;
 
-        public void CardDeckActivate() => _cardDeck.SetActive(true);
+		private void Awake()
+		{
+            _cross.Deactivate();
+			_chatButton.onClick.AddListener(() => SetActiveChat());
+		}
+
+        private void SetActiveChat()
+        {
+            bool active = _cross.gameObject.activeSelf ? true : false;
+            _cross.gameObject.SetActive(!active);
+            _chat.gameObject.SetActive(active);
+		}
+
+		public void CardDeckActivate() => _cardDeck.SetActive(true);
 
         public void ShowPlayersInPlaces(PlayerInfoView playerItem, PlayerItemPosition playerItemPosition)
         {

@@ -4620,6 +4620,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1118831924711988460, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7073294525875741299, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
       propertyPath: m_Name
       value: SceneTransitoin

@@ -2,6 +2,7 @@ using Cards;
 using System;
 using Players;
 using Photon.Pun;
+using Combination;
 using System.Linq;
 using UnityEngine;
 using Photon.Realtime;
@@ -20,7 +21,7 @@ namespace PokerMatch
         }
 
         private Dictionary<Player, PlayerModel> _playerModels = new();
-        private Dictionary<Combination, Player> _playerCombination = new();
+        private Dictionary<CombinationModel, Player> _playerCombination = new();
         private List<Player> _currentPlayers = new();
         private List<CardModel> _tableCards = new();
 
@@ -50,7 +51,7 @@ namespace PokerMatch
             SmallBlindPlayerId = -1;
         }
 
-        public void AddPlayerCombination(Player player, Combination combination)
+        public void AddPlayerCombination(Player player, CombinationModel combination)
         {
             if (!_playerCombination.ContainsKey(combination))
                 _playerCombination.Add(combination, player);
@@ -79,9 +80,9 @@ namespace PokerMatch
             foreach (var item in _playerCombination)
                 Debug.Log($"Combination:{item.Key}; Player:{item.Value.NickName}");
               
-            List<Combination> combinations = _playerCombination.Keys.ToList();
+            List<CombinationModel> combinations = _playerCombination.Keys.ToList();
             combinations.Sort();
-            Combination highCombination = combinations.Last();
+			CombinationModel highCombination = combinations.Last();
             Debug.Log($"High combination:{highCombination};");
             Player player = _playerCombination.GetValueOrDefault(highCombination);
             return player;

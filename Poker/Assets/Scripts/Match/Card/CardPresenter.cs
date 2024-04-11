@@ -8,22 +8,26 @@ namespace Cards
     public class CardPresenter : MonoBehaviourPun, IPunInstantiateMagicCallback
     {
         [SerializeField] private CardData _cardData;
-        private CardModel _cardModel;
-        private CardView _cardView;
+        private AudioSource _audioSource;
+		private CardModel _cardModel;
+		private CardView _cardView;
 
-        public CardModel CardModel => _cardModel;
+		public CardModel CardModel => _cardModel;
 
         public void Init(CardModel model)
         {
             _cardView = GetComponent<CardView>();
-            _cardModel = model;
+			_audioSource = GetComponent<AudioSource>();
+			_cardModel = model;
 
-            PhotonNetwork.AddCallbackTarget(this);
+			_audioSource.PlayOneShot(_cardData.CardDeal);
+			PhotonNetwork.AddCallbackTarget(this);
         }
 
         public async Task Open(bool showCard = false)
         {
-            await _cardView.RotateCard(_cardModel.IsOpened, showCard);
+			_audioSource.PlayOneShot(_cardData.CardOpen);
+			await _cardView.RotateCard(_cardModel.IsOpened, showCard);
             _cardModel.IsOpened = !_cardModel.IsOpened;
         }
 

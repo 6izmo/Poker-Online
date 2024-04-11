@@ -3,6 +3,7 @@ using Cards;
 using Players;
 using Photon.Pun;
 using PlayerList;
+using Combination;
 using UnityEngine;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
@@ -81,7 +82,7 @@ namespace PokerMatch
         {
 			PhotonPeer.RegisterType(typeof(CardModel), 4, CardModel.Serialize, CardModel.Deserialize);
 			PhotonPeer.RegisterType(typeof(PlayerModel), 5, PlayerModel.Serialize, PlayerModel.Deserialize);
-			PhotonPeer.RegisterType(typeof(Combination), 6, Combination.Serialize, Combination.Deserialize);
+			PhotonPeer.RegisterType(typeof(CombinationModel), 6, CombinationModel.Serialize, CombinationModel.Deserialize);
 			PhotonPeer.RegisterType(typeof(ColorModel), 7, ColorModel.Serialize, ColorModel.Deserialize);
 		}
 

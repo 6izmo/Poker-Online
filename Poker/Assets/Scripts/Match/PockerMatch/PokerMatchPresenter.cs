@@ -3,6 +3,7 @@ using Cards;
 using Players;
 using Photon.Pun;
 using UnityEngine;
+using Combination;
 using Photon.Realtime;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace PokerMatch
         private Dictionary<Player, PlayerInfoView> _playersInfo;
 
         private const int _delayOperation = 1000;
+        private const int _delayBetweenMatch = 5000;
 
         public void Init(PokerMatchModel model, PokerMatchView view, BankPresenter bankPreseter, Dealer dealer)
         {
@@ -105,14 +107,14 @@ namespace PokerMatch
         {
             PlayerModel localModel = _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
             CombinationReader reader = new();
-            Combination combination = await reader.GetCombination(localModel, _matchModel.TableCards);
+			CombinationModel combination = await reader.GetCombination(localModel, _matchModel.TableCards);
             photonView.RPC("AddPlayerCombination", RpcTarget.All, PhotonNetwork.LocalPlayer, combination);
             await Task.Delay(_delayOperation);
 
             Player player = _matchModel.GetWinner();
             PlayerModel playerModel = _matchModel.GetPlayerModel(player);
             PlayerInfoView info = _playersInfo.GetValueOrDefault(player);
-			info.ChangeColorText(new Color(1, 0.263f, 0));
+			info.ChangeColorText(new Color(1, 0.5f, 0));
 
 			await _bankPresenter.GiveAwayTheWinnings(playerModel);
 
@@ -121,7 +123,7 @@ namespace PokerMatch
                 for (int i = 0; i < localModel.Cards.Count; i++)
                     localModel.Cards[i].Showdown();
             }
-            await Task.Delay(_delayOperation);
+            await Task.Delay(_delayBetweenMatch);
 			info.ChangeColorText(Color.white);
 			NewDistribution();          
         }
@@ -191,7 +193,7 @@ namespace PokerMatch
         public void AddTableCard(CardModel cardModel) => _matchModel.AddCardTable(cardModel);
 
         [PunRPC]
-        public void AddPlayerCombination(Player player, Combination combination) => _matchModel.AddPlayerCombination(player, combination); 
+        public void AddPlayerCombination(Player player, CombinationModel combination) => _matchModel.AddPlayerCombination(player, combination); 
 
 		[PunRPC]
         public void AddPlayerModel(Player player, PlayerModel playerModel) => _matchModel.AddPlayerModel(player, playerModel);
