@@ -1,5 +1,4 @@
 using Players;
-using UnityEngine;
 using System.Threading.Tasks;
 
 namespace Bank
@@ -14,8 +13,8 @@ namespace Bank
             _bankModel = model;
             _bankView = view;
 
-            _bankModel.AmoutMoney.OnChanged += (context) => _bankView.UpdateBank(_bankModel.LastAmount, context);
-        }
+            _bankModel.AmoutMoney.OnChanged += UpdateBank;
+		}
 
         public void AddMoney(int money)
         {
@@ -23,16 +22,17 @@ namespace Bank
             _bankModel.AmoutMoney.Value += money;
         }
 
-        public void ActivateBank() => _bankView.ActivateBank(true);
+        private void UpdateBank(int money) => _bankView.UpdateBank(_bankModel.LastAmount, money);
 
+		public void ActivateBank() => _bankView.ActivateBank(true);
+           
         public void ChangeRate(int rate) => _bankModel.ChangeRate(rate);
 
         public Task GiveAwayTheWinnings(PlayerModel playerModel)
         {
             playerModel.Money.Value += _bankModel.AmoutMoney.Value;
             _bankModel.AmoutMoney.Value = 0;
-            Debug.Log($"Complete");
             return Task.CompletedTask;
         }
-    }
+	}
 }

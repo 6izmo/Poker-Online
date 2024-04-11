@@ -16,9 +16,4 @@ public class Chat : MonoBehaviourPunCallbacks
 
         _chat.text += "\n" + playerNickName + ": " + message;
     }
-
-    public void SendMessage()
-    {
-        photonView.RPC("OnSendMessage", RpcTarget.All, PhotonNetwork.NickName, _inputField.text);
-    }
 }

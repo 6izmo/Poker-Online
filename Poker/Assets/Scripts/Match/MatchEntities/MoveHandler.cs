@@ -1,15 +1,13 @@
 using Bank;
-using System;
 using Players;
 using PokerMatch;
 using Photon.Pun;
-using UnityEngine;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Move = Players.PlayerModel.PlayerMove;
 using State = Players.PlayerModel.PlayerState;
 
-public class MoveHandler : IOnEventCallback, IDisposable
+public class MoveHandler : IOnEventCallback
 {
     private PokerMatchPresenter _matchPresenter;
     private PokerMatchModel _matchModel;
@@ -62,6 +60,9 @@ public class MoveHandler : IOnEventCallback, IDisposable
 		Player nextPlayer = playerIndex + 1 >= _matchModel.PlayersCount ? _matchModel.CurrentPlayers[0] : _matchModel.CurrentPlayers[playerIndex + 1];
 		PlayerModel nextPlayerModel = _matchModel.GetPlayerModel(nextPlayer);
 
+        if (localModel.Folded.Value && _matchModel.PlayersCount == 1)
+            _matchPresenter.SetMatchPhasePun(PokerMatchModel.MatchPhase.OpeningCard);
+
 		if (((localModel.Rate.Value == nextPlayerModel.Rate.Value) && (_moveCount == _matchModel.PlayersCount)) 
             || ((localModel.Rate.Value == nextPlayerModel.Rate.Value) && (_moveCount >= _matchModel.PlayersCount)) 
             || (_moveCount >= _matchModel.PlayersCount && localModel.Folded.Value))
@@ -73,5 +74,5 @@ public class MoveHandler : IOnEventCallback, IDisposable
         _matchPresenter.SetPlayerStatePun(nextPlayer, State.Move);
     }
 
-    public void Dispose() => PhotonNetwork.RemoveCallbackTarget(this);
+    public void RemoveCallback() => PhotonNetwork.RemoveCallbackTarget(this);
 }

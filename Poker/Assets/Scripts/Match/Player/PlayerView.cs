@@ -49,7 +49,7 @@ namespace Players
 
             _checkCardsButton.onClick.AddListener(delegate { OnTurnedOver?.Invoke(); });
 
-            _callButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Call); _callText.text = "CHECK"; });
+            _callButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Call); });
             _raiseButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Raise); });
             _allInButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.AllIn); });
             _foldButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Fold); });
@@ -62,7 +62,9 @@ namespace Players
 
 		public void UpdateRaiseButton(int sum) => _raiseText.text = $"RAISE({sum})";
 
-        public async void UpdateMoneyText(int money)
+        public void ChangeCallToCheck() => _callText.text = "CHECK";
+
+		public async void UpdateMoneyText(int money)
         {
             float animationTime = 0.75f;
             float elapsedTime = 0f;

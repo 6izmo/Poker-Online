@@ -1,4 +1,3 @@
-using System;
 using Photon.Pun;
 using UnityEngine;
 using System.Threading.Tasks;
@@ -6,7 +5,7 @@ using System.Threading.Tasks;
 namespace Cards
 {
     [RequireComponent(typeof(PhotonView))]
-    public class CardPresenter : MonoBehaviourPun, IPunInstantiateMagicCallback, IDisposable
+    public class CardPresenter : MonoBehaviourPun, IPunInstantiateMagicCallback
     {
         [SerializeField] private CardData _cardData;
         private CardModel _cardModel;
@@ -78,6 +77,6 @@ namespace Cards
             await Task.CompletedTask;
         }
 
-        public void Dispose() => PhotonNetwork.RemoveCallbackTarget(this);
+        public void Disable() => PhotonNetwork.RemoveCallbackTarget(this);
     }
 }

@@ -36,7 +36,9 @@ namespace Cards {
         }
 
         public static Sprite GetSprite(CardModel card) => _allCardInfo.GetValueOrDefault(card.Suit)[card.Rank];
+
         public Vector2 GetCardPosition(int playerNumber, int cardNumber) => _positionsList.ElementAtOrDefault(playerNumber).CardPositions[cardNumber];
+
         public Vector2 GetTableCardPosition(int index) => _tablePositions[index];
 
         public void SortList(int actorNumber)

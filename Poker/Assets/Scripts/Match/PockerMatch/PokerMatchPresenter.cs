@@ -27,15 +27,11 @@ namespace PokerMatch
             _matchView = view;
             _matchModel = model;
             _bankPresenter = bankPreseter;
-                 
-            _matchModel.OnNewDistribution += (content) => _matchView.CardDeckActivate();
-            _matchModel.OnNewDistribution += (context) => StartNewBidding();
-            _matchModel.OnNewDistribution += _dealer.StartDealing;
 
-            _matchModel.OnNewDistributionAfterBet += _dealer.TableDealing;
+            _matchModel.OnNewDistribution += NewMatch;
+			_matchModel.OnNewDistributionAfterBet += _dealer.TableDealing;
             _matchModel.OnBetSettings += StartBidding;
             _matchModel.OnFinished += FinishGame;
-
             _dealer.OnDealingEnded += EndDealing;
         }
 
@@ -49,7 +45,14 @@ namespace PokerMatch
             _matchModel.SetMatchPhase(Phase.NewDistribution);  
         }
 
-        private void SetPlayerInPlaces()
+        private void NewMatch(CardData cardData)
+        {
+			_matchView.CardDeckActivate();
+			StartNewBidding();
+			_dealer.StartDealing(cardData);
+        }
+
+		private void SetPlayerInPlaces()
         {
             _matchView.ShowPlayersInPlaces(_playersInfo.GetValueOrDefault(PhotonNetwork.LocalPlayer), _matchModel.PokerPlayerData.LocalPosition);
 			for (int i = 0; i < PhotonNetwork.PlayerListOthers.Length; i++)
@@ -108,7 +111,8 @@ namespace PokerMatch
 
             Player player = _matchModel.GetWinner();
             PlayerModel playerModel = _matchModel.GetPlayerModel(player);
-            _playersInfo.GetValueOrDefault(player).ChangeColorText(new Color(1, 0.263f, 0));
+            PlayerInfoView info = _playersInfo.GetValueOrDefault(player);
+			info.ChangeColorText(new Color(1, 0.263f, 0));
 
 			await _bankPresenter.GiveAwayTheWinnings(playerModel);
 
@@ -118,7 +122,8 @@ namespace PokerMatch
                     localModel.Cards[i].Showdown();
             }
             await Task.Delay(_delayOperation);
-            NewDistribution();          
+			info.ChangeColorText(Color.white);
+			NewDistribution();          
         }
 
         private void NewDistribution()
@@ -128,7 +133,6 @@ namespace PokerMatch
 
             if(PhotonNetwork.IsMasterClient)
                 PhotonNetwork.DestroyAll();
-
 
             _matchModel.SetMatchPhase(Phase.NewDistribution);
         }
@@ -159,7 +163,7 @@ namespace PokerMatch
 
         [PunRPC]
         public void SetPlayerState(Player player, PlayerModel.PlayerState state)
-        {           
+        {                      
             PlayerModel model = _matchModel.GetPlayerModel(player);
             _playersInfo.GetValueOrDefault(player).ChangeColorText(Color.green);
             model.CurrentState = state;
@@ -192,9 +196,7 @@ namespace PokerMatch
 		[PunRPC]
         public void AddPlayerModel(Player player, PlayerModel playerModel) => _matchModel.AddPlayerModel(player, playerModel);
 
-        public void SendMessagePun(string message, ColorModel color) => photonView.RPC("SendEventMessage", RpcTarget.All, message, color);
-
         [PunRPC]
-        public void RemovePlayer(Player player) => _matchModel.RemovePlayer(player); 
+        public void RemovePlayer(Player player) => _matchModel.RemovePlayer(player);
 	}
 }

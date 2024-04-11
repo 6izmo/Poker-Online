@@ -35,8 +35,6 @@ namespace Players
 
         public ObservableVariable<int> RaiseSum { get; private set; }
 
-        public event Action<bool> OnGotCards;
-
         public int LastAmountMoney { get; set; }
 
         public PlayerState CurrentState { get; set; }
@@ -44,8 +42,8 @@ namespace Players
         public PlayerModel(int startMoney)
         {
             Rate = new();
-            Folded = new(false);
-            Money = new(startMoney);
+			Folded = new(false);
+			Money = new(startMoney);
             LastAmountMoney = Money.Value;
             CurrentState = PlayerState.Waiting;
             RaiseSum = new(BankModel.BigBlind);
@@ -57,7 +55,7 @@ namespace Players
             {
                 _cardsInfo.Add(presenter);
                 if (_cardsInfo.Count == 2)
-                    OnGotCards?.Invoke(true);
+                    Folded.Value = false;
             }
         }
 
@@ -67,11 +65,7 @@ namespace Players
             Rate.Value += value;
         }
 
-        public void ResetModel()
-        {
-            Folded.Value = false;
-            _cardsInfo.Clear();
-        }
+        public void ResetModel() => _cardsInfo.Clear();
 
         public static byte[] Serialize(object customType)
         {

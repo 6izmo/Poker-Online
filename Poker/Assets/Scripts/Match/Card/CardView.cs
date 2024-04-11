@@ -50,7 +50,7 @@ namespace Cards
             _isTurning = false;
         }
 
-        private async Task Rotate(float rotateTime, Vector3 startRotation, Vector3 neededRotation)
+        private async Task Rotate(float rotateTime, Vector3 startRotation, Vector3 neededRotation)    
         {
             float elapsedTime = 0f;
             while (elapsedTime < rotateTime)

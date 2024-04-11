@@ -1,4 +1,3 @@
-using System;
 using Players;
 using PokerMatch;
 using Photon.Pun;
@@ -8,7 +7,7 @@ using ExitGames.Client.Photon;
 
 namespace Cards
 {
-    public class CardSpawner : IOnEventCallback, IDisposable
+    public class CardSpawner : IOnEventCallback
     {
         private PokerMatchModel _pokerModel;
 
@@ -47,6 +46,6 @@ namespace Cards
             playerModel.AddCard(cardPresenter);
         }
 
-        public void Dispose() => PhotonNetwork.RemoveCallbackTarget(this);
+        public void RemoveCallback() => PhotonNetwork.RemoveCallbackTarget(this);
     }
 }

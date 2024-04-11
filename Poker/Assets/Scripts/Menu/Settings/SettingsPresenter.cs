@@ -38,17 +38,11 @@ namespace Settings
 			SettingsSaveLoadUtils.SaveSettingsData(_model);
 		}
 
-		private void OnDisable()
+		private void OnDestroy()
 		{
 			_view.OnClosed -= SaveAudio;
 			_view.OnEffectsChanged -= ChangeEffectsMixer;
 			_view.OnMusicChanged -= ChangeMusicMixer;
-		}
-
-		private void OnApplicationQuit()
-		{
-			_model.IsConnected = false;
-			SettingsSaveLoadUtils.SaveSettingsData(_model);
 		}
 	}
 }

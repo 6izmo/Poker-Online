@@ -10,26 +10,29 @@ namespace Players
     {
         private PlayerView _playerView;
         private PlayerModel _playerModel;
-        
+
         public PlayerPresenter(PlayerModel model, PlayerView view)
         {
             _playerModel = model;
             _playerView = view;
 
-            BankModel.OnCurrentRateChanged += (context) => SetRaiseValue(context - _playerModel.Rate.Value + BankModel.BigBlind);
-            BankModel.OnCurrentRateChanged += _playerView.UpdateCallButton;
+            BankModel.OnCurrentRateChanged += SetRaise;
+			BankModel.OnCurrentRateChanged += _playerView.UpdateCallButton;
 
             _playerModel.RaiseSum.OnChanged += _playerView.UpdateRaiseButton;
             _playerModel.Money.OnChanged += _playerView.UpdateMoneyText;
-            _playerModel.Folded.OnChanged += (active) =>  _playerView.ActiveCheckCards(!active);
-            _playerModel.OnGotCards += _playerView.ActiveCheckCards;
+            _playerModel.Folded.OnChanged += ActivateCardsButton;
 
             _playerView.OnRaiseChanged += SetRaiseValue;
             _playerView.OnTurnedOver += TurnOverCards;
             _playerView.OnMoved += OnMove;
         }
-           
-        private void SetRaiseValue(int value)
+        
+        private void SetRaise(int rate) => SetRaiseValue(rate - _playerModel.Rate.Value + BankModel.BigBlind);
+
+        private void ActivateCardsButton(bool activate) => _playerView.ActiveCheckCards(!activate);
+
+		private void SetRaiseValue(int value)
         {
             if (value > 0 && value < _playerModel.Money.Value && value >= (BankModel.CurrentRate - _playerModel.Rate.Value) + BankModel.BigBlind)
                 _playerModel.RaiseSum.Value = value;
@@ -46,7 +49,10 @@ namespace Players
             if (_playerModel.CurrentState != PlayerModel.PlayerState.Move)
                 return;
 
-            object[] content = new object[] { PhotonNetwork.LocalPlayer, move, _playerModel };
+            if (move == Move.Call)
+                _playerView.ChangeCallToCheck();
+
+			object[] content = new object[] { PhotonNetwork.LocalPlayer, move, _playerModel };
             RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
             PhotonNetwork.RaiseEvent((byte)EventCode.Move, content, eventOptions, SendOptions.SendUnreliable);
         }

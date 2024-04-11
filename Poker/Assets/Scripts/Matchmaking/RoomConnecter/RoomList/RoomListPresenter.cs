@@ -55,5 +55,12 @@ namespace RoomList
         }
 
         private void Exit() => SceneTransition.SwitchToScene("Menu");
-    }
+
+		private void OnDestroy()
+		{
+			_listView.OnRoomCreated -= _listModel.CreateRoom;
+			_listView.OnExit -= Exit;
+			_listView.OnRoomJoined -= JoinByName;
+		}
+	}
 }

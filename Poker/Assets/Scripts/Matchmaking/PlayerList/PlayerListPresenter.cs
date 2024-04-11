@@ -11,13 +11,16 @@ namespace PlayerList
     public class PlayerListPresenter : MonoBehaviourPunCallbacks
     {
         private PlayerListModel _playerListModel;
+        private PlayerListView _playerListView;
 
-        public event Action<Dictionary<Player, PlayerInfoView>> OnAllPlayersReady;
+		public event Action<Dictionary<Player, PlayerInfoView>> OnAllPlayersReady;
 
         public void Init(PlayerListModel model, PlayerListView view)
         {
             _playerListModel = model;
-            view.OnLeaved += Leave;
+			_playerListView = view;
+
+			_playerListView.OnLeaved += Leave;
         }
 
         private void Start()
@@ -55,6 +58,5 @@ namespace PlayerList
         public override void OnPlayerEnteredRoom(Player newPlayer) => _playerListModel.AddPlayer(newPlayer);
 
         public override void OnPlayerLeftRoom(Player otherPlayer) => _playerListModel.RemovePLayer(otherPlayer);
-
-    }
+	}
 }

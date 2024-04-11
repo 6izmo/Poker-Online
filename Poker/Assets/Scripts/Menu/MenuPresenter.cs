@@ -6,15 +6,16 @@ namespace Menu
     {
         private PhotonConnecter _photonConnecter;
         private SettingsPresenter _settingsPresenter;
+        private MenuView _menuView;
 
-		public MenuPresenter(MenuView menuView, PhotonConnecter photonConnecter, SettingsPresenter settingsPresenter, bool isConnected)
+		public MenuPresenter(MenuView menuView, PhotonConnecter photonConnecter, SettingsPresenter settingsPresenter)
         {
             _photonConnecter = photonConnecter;
 			_settingsPresenter = settingsPresenter;
-			menuView.Init(isConnected);
+            _menuView = menuView;
 
-			menuView.OnPlayButtonClicked += LoadRoomsScene;
-            menuView.OnInputedName += ConnectPlayer;
+			_menuView.OnPlayButtonClicked += LoadRoomsScene;
+			_menuView.OnInputedName += ConnectPlayer;
         }
 
         private void ConnectPlayer(string nickname)
