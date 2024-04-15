@@ -95,5 +95,5 @@ MonoBehaviour:
   - {x: 0.6, y: 0}
   - {x: 2, y: 0}
   - {x: 3.4, y: 0}
-  _cardOpen: {fileID: 8300000, guid: 9fb7e1047e10df746b89e1738646282e, type: 3}
-  _cardDeal: {fileID: 8300000, guid: 502932100e53b0b47bd20177514b9be0, type: 3}
+  _cardDealClip: {fileID: 8300000, guid: 502932100e53b0b47bd20177514b9be0, type: 3}
+  _cardOpenClip: {fileID: 8300000, guid: 9fb7e1047e10df746b89e1738646282e, type: 3}

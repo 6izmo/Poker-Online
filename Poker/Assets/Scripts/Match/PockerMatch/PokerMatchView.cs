@@ -13,6 +13,7 @@ namespace PokerMatch
         [SerializeField] private Button _chatButton;
         [SerializeField] private Image _cross;
 		[SerializeField] private RectTransform _chat;
+        [SerializeField] private Text _congratulations;
 
 		private void Awake()
 		{
@@ -27,7 +28,14 @@ namespace PokerMatch
             _chat.gameObject.SetActive(active);
 		}
 
-		public void CardDeckActivate() => _cardDeck.SetActive(true);
+        public void OnEndMatch(string winnerName)
+        {
+            _cardDeck.Deactivate();
+            _congratulations.Activate();
+            _congratulations.text = "Game Over " + '\n' + winnerName + " Won";
+		}
+
+		public void SetActiveCardDeck(bool active) => _cardDeck.SetActive(active);
 
         public void ShowPlayersInPlaces(PlayerInfoView playerItem, PlayerItemPosition playerItemPosition)
         {

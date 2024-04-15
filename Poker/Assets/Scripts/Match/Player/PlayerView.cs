@@ -13,11 +13,9 @@ namespace Players
     public class PlayerView : MonoBehaviourPun
     {
         [SerializeField] private RectTransform _commandPanel;
-        [SerializeField] private Image _chipsImage;
         private PlayerModel _playerModel;
 
         [Header("Text")]
-        [SerializeField] private TextMeshProUGUI _moveText;
         [SerializeField] private TextMeshProUGUI _moneyText;
         [SerializeField] private TextMeshProUGUI _callText;
         [SerializeField] private TextMeshProUGUI _raiseText;
@@ -30,7 +28,6 @@ namespace Players
         [SerializeField] private Button _minusButton;
         [SerializeField] private Button _callButton;
         [SerializeField] private Button _foldButton;
-        [SerializeField] private Button _leaveButton;
 
         public event Action OnTurnedOver;
         public event Action<Move> OnMoved;
@@ -42,23 +39,24 @@ namespace Players
 
             _moneyText.Activate();
             _commandPanel.Activate();
-            _chipsImage.Activate();
             _checkCardsButton.Deactivate();
 
             _moneyText.text = $"{_playerModel.Money}$";
 
             _checkCardsButton.onClick.AddListener(delegate { OnTurnedOver?.Invoke(); });
 
-            _callButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Call); });
-            _raiseButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Raise); });
-            _allInButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.AllIn); });
-            _foldButton.onClick.AddListener(delegate { OnMoved?.Invoke(Move.Fold); });
+            _callButton.onClick.AddListener(()  => OnMoved?.Invoke(Move.Call));
+            _raiseButton.onClick.AddListener(() => OnMoved?.Invoke(Move.Raise) );
+            _allInButton.onClick.AddListener(() => OnMoved?.Invoke(Move.AllIn));
+            _foldButton.onClick.AddListener(()  => OnMoved?.Invoke(Move.Fold));
 
-            _plusButton.onClick.AddListener(delegate { OnRaiseChanged(_playerModel.RaiseSum.Value + BankModel.BigBlind); });
-            _minusButton.onClick.AddListener(delegate { OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind); });
+            _plusButton.onClick.AddListener(()  => OnRaiseChanged(_playerModel.RaiseSum.Value + BankModel.BigBlind));
+            _minusButton.onClick.AddListener(() => OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind));
         }
 
-        public void ActiveCheckCards(bool active) => _checkCardsButton.gameObject.SetActive(active);
+        public void SetActiveCardButton(bool active) => _checkCardsButton.gameObject.SetActive(active);
+
+		public void SetActiveCommandPanel(bool folded) => _commandPanel.gameObject.SetActive(!folded);
 
 		public void UpdateRaiseButton(int sum) => _raiseText.text = $"RAISE({sum})";
 

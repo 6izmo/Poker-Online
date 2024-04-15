@@ -17,7 +17,7 @@ namespace PokerMatch
 		private int _timeDelay = 750;
         private int _currentCountCard = 0;
 
-        public async void StartDealing(CardData cardData)
+        public async void StartDealing(CardData cardData, List<Player> players)
         {
             _cardDeck = new();
             _currentCountCard = 0;
@@ -25,13 +25,13 @@ namespace PokerMatch
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-			for (int cardIndex = 0; cardIndex < 2; cardIndex++)
+			for (int j = 0; j < 2; j++)
 			{
-				for (int playerIndex = 0; playerIndex < PhotonNetwork.PlayerList.Length; playerIndex++)
+				for (int i = 0; i < players.Count; i++)
 				{
 					CardModel newCardModel = _cardDeck.GetRandomCard();
-					Player player = PhotonNetwork.PlayerList[playerIndex];
-					object[] content = new object[] { EventCode.AddCard, player, newCardModel, cardData.CardViewPrefab.name, cardIndex };
+					Player player = players[i];
+					object[] content = new object[] { EventCode.AddCard, player, newCardModel, cardData.CardViewPrefab.name, j };
 					RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
                     PhotonNetwork.RaiseEvent((byte)EventCode.Dealing, content, eventOptions, ExitGames.Client.Photon.SendOptions.SendUnreliable);
 					await Task.Delay(_timeDelay);

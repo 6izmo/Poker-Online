@@ -3,8 +3,6 @@ namespace Settings
     [System.Serializable]
     public class SettingsModel
     {
-		public bool IsConnected { get; set; }
-
 		public float Music { get; set; }
 
 		public float Effects { get; set; }

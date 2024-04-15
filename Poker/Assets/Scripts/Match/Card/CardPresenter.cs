@@ -20,13 +20,13 @@ namespace Cards
 			_audioSource = GetComponent<AudioSource>();
 			_cardModel = model;
 
-			_audioSource.PlayOneShot(_cardData.CardDeal);
+            _audioSource.PlayOneShot(_cardData.CardDealClip);
 			PhotonNetwork.AddCallbackTarget(this);
         }
 
         public async Task Open(bool showCard = false)
         {
-			_audioSource.PlayOneShot(_cardData.CardOpen);
+			_audioSource.PlayOneShot(_cardData.CardOpenClip);
 			await _cardView.RotateCard(_cardModel.IsOpened, showCard);
             _cardModel.IsOpened = !_cardModel.IsOpened;
         }

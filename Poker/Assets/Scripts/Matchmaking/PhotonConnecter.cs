@@ -1,3 +1,4 @@
+using System;
 using Utilities;
 using Photon.Pun;
 using UnityEngine;
@@ -9,21 +10,22 @@ public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter>
     [Space]
     [SerializeField] private string _gameVersion = "0.0.1";
 
-    public void PlayerConnect(string nickname)
+    public bool TryPlayerConnect(string nickname)
     {
-        if (PhotonNetwork.IsConnected)
-            return;
-
-        if (nickname == null)
-            nickname = $"Player_{new System.Random().Next(0, 100)}";
-
-        PhotonNetwork.NickName = nickname;
-
-        PhotonNetwork.GameVersion = _gameVersion;
-        PhotonNetwork.AutomaticallySyncScene = false;
-
-        PhotonNetwork.ConnectUsingSettings();
-        PhotonNetwork.ConnectToRegion($"{_regionToken}");
+        try
+        {
+			PhotonNetwork.NickName = nickname;
+			PhotonNetwork.GameVersion = _gameVersion;
+			PhotonNetwork.AutomaticallySyncScene = false;
+			PhotonNetwork.ConnectUsingSettings();
+			PhotonNetwork.ConnectToRegion($"{_regionToken}");
+		}
+        catch(Exception ex)
+        {
+            Debug.LogException(ex);
+            return false;
+        }
+        return true;
     }
 
     public override void OnConnectedToMaster()

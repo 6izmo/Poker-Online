@@ -18,8 +18,8 @@ namespace Cards {
         [SerializeField] private List<Vector2> _tablePositions = new();
 
         [Header("CardAudio")]
-        [SerializeField] private AudioClip _cardOpen;
-        [SerializeField] private AudioClip _cardDeal;
+        [SerializeField] private AudioClip _cardDealClip;
+        [SerializeField] private AudioClip _cardOpenClip;
 
 		public CardView CardViewPrefab => _cardViewPrefab;
 
@@ -27,9 +27,9 @@ namespace Cards {
 
         public Vector2 CardDeckPosition => _cardDeckPosition;
 
-        public AudioClip CardDeal => _cardDeal;
+        public AudioClip CardDealClip => _cardDealClip;
 
-        public AudioClip CardOpen => _cardOpen;
+        public AudioClip CardOpenClip => _cardOpenClip;
 
 		private static Dictionary<CardSuits, List<Sprite>> _allCardInfo = new();
         private LinkedList<PlayerCardPositions> _positionsList;

@@ -20,7 +20,11 @@ public class PlayerInfoView : MonoBehaviour
         SetReadyCondition(false);
     }
 
-    public void SetPLayerInfo(Player player) => _nickName.text = player.NickName;
+    public void SetPLayerInfo(Player player)
+    {
+        _nickName.text = player.NickName;
+        gameObject.name = player.NickName;
+	}
 
     public void ChangeColorText(Color color)
     {

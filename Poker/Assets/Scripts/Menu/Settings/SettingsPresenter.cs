@@ -32,12 +32,6 @@ namespace Settings
 			SettingsSaveLoadUtils.SaveSettingsData(_model);
 		}
 
-		public void OnConnectedPlayer()
-		{
-			_model.IsConnected = true;
-			SettingsSaveLoadUtils.SaveSettingsData(_model);
-		}
-
 		private void OnDestroy()
 		{
 			_view.OnClosed -= SaveAudio;

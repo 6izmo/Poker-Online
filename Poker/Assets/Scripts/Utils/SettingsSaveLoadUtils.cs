@@ -9,11 +9,9 @@ namespace Utilities
 	{
 		private const string _settingsFileName = "settingsData.json";
 
-		private static string s_SaveFolder => Path.Combine(Application.dataPath, "Scripts", "Menu", "Settings");
-
 		public static SettingsModel LoadSettingsData()
 		{
-			string path = Path.Combine(s_SaveFolder, _settingsFileName);
+			string path = Path.Combine(Application.streamingAssetsPath, _settingsFileName);
 
 			if (!File.Exists(path))
 				return null;
@@ -25,6 +23,9 @@ namespace Utilities
 
 			SettingsModel data = JsonConvert.DeserializeObject<SettingsModel>(serializedData);
 
+			if (data == null)
+				return new SettingsModel();
+
 			return data;
 		}
 
@@ -34,9 +35,9 @@ namespace Utilities
 				return;
 
 			string serializedObject = JsonConvert.SerializeObject(dataModel, SettingsModel.SerializeSettings());
-			string path = Path.Combine(s_SaveFolder, _settingsFileName);
+			string path = Path.Combine(Application.streamingAssetsPath, _settingsFileName);
 
-			CreateDirectoryIfNoteExists(s_SaveFolder);
+			CreateDirectoryIfNoteExists(Application.streamingAssetsPath);
 
 			File.WriteAllText(path, serializedObject);
 		}

@@ -21,7 +21,8 @@ namespace Players
 
             _playerModel.RaiseSum.OnChanged += _playerView.UpdateRaiseButton;
             _playerModel.Money.OnChanged += _playerView.UpdateMoneyText;
-            _playerModel.Folded.OnChanged += ActivateCardsButton;
+            _playerModel.Folded.OnChanged += _playerView.SetActiveCommandPanel;
+            _playerModel.OnGotCards += _playerView.SetActiveCardButton;
 
             _playerView.OnRaiseChanged += SetRaiseValue;
             _playerView.OnTurnedOver += TurnOverCards;
@@ -29,8 +30,6 @@ namespace Players
         }
         
         private void SetRaise(int rate) => SetRaiseValue(rate - _playerModel.Rate.Value + BankModel.BigBlind);
-
-        private void ActivateCardsButton(bool activate) => _playerView.ActiveCheckCards(!activate);
 
 		private void SetRaiseValue(int value)
         {

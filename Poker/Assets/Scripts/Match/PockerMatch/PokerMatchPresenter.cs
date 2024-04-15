@@ -33,7 +33,8 @@ namespace PokerMatch
             _matchModel.OnNewDistribution += NewMatch;
 			_matchModel.OnNewDistributionAfterBet += _dealer.TableDealing;
             _matchModel.OnBetSettings += StartBidding;
-            _matchModel.OnFinished += FinishGame;
+            _matchModel.OnEndedMatch += EndMatch;
+            _matchModel.OnEndedGame += _matchView.OnEndMatch;
             _dealer.OnDealingEnded += EndDealing;
         }
 
@@ -49,9 +50,9 @@ namespace PokerMatch
 
         private void NewMatch(CardData cardData)
         {
-			_matchView.CardDeckActivate();
+			_matchView.SetActiveCardDeck(true);
 			StartNewBidding();
-			_dealer.StartDealing(cardData);
+			_dealer.StartDealing(cardData, _matchModel.CurrentPlayers);
         }
 
 		private void SetPlayerInPlaces()
@@ -77,46 +78,72 @@ namespace PokerMatch
 
         private void StartBidding()
         {
-            for (int i = 0; i < _matchModel.CurrentPlayers.Count; i++)
+            int allIn = 0;
+			for (int i = 0; i < _matchModel.PlayersCount; i++)
+			{
+				PlayerModel playerModel = _matchModel.GetPlayerModel(_matchModel.CurrentPlayers[i]);
+				playerModel.Rate.Value = 0;
+                if (playerModel.AllIn)
+					allIn++;
+			}
+
+			_bankPresenter.ChangeRate(0);
+			if (!PhotonNetwork.IsMasterClient)
+				return;
+
+			if (allIn == _matchModel.PlayersCount - 1)
             {
-                PlayerModel playerModel = _matchModel.GetPlayerModel(_matchModel.CurrentPlayers[i]);
-                playerModel.Rate.Value = 0;
+                if(_matchModel.DesiredCardCount > 5)
+                {
+					SetMatchPhasePun(Phase.EndMatch);
+					return;
+                }
+				SetMatchPhasePun(Phase.NewDistributionAfterBet);
+				return;
             }
-            _bankPresenter.ChangeRate(0);
-            if (PhotonNetwork.IsMasterClient)
-                SetPlayerStatePun(_matchModel.CurrentPlayers[_matchModel.SmallBlindPlayerId], PlayerModel.PlayerState.Move);   
+
+			SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);   
         }
 
         private void StartNewBidding()
-        {
+        {       
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            SetPlayerStatePun(PhotonNetwork.PlayerList[_matchModel.SmallBlindPlayerId], PlayerModel.PlayerState.Move);
-            SetBlinds(PhotonNetwork.PlayerList[_matchModel.SmallBlindPlayerId]);
+            SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
+            SetBlinds(_matchModel.StartPlayer);
         }
 
         private void SetBlinds(Player player)
         {
             Player bigBlindPlayer = player.ActorNumber == PhotonNetwork.PlayerList.Length ? PhotonNetwork.PlayerList[0] : PhotonNetwork.PlayerList[player.ActorNumber];
-            UpdatePlayerRatePun(RpcTarget.All, player, BankModel.SmallBlind);
-            UpdatePlayerRatePun(RpcTarget.All, bigBlindPlayer, BankModel.BigBlind);
+            UpdatePlayerRatePun(player, BankModel.SmallBlind);
+            UpdatePlayerRatePun(bigBlindPlayer, BankModel.BigBlind, false);
         }
 
-        private async void FinishGame()
+        private async void EndMatch()
         {
-            PlayerModel localModel = _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
-            CombinationReader reader = new();
-			CombinationModel combination = await reader.GetCombination(localModel, _matchModel.TableCards);
-            photonView.RPC("AddPlayerCombination", RpcTarget.All, PhotonNetwork.LocalPlayer, combination);
-            await Task.Delay(_delayOperation);
+            Player winner;
+			PlayerModel localModel = _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
 
-            Player player = _matchModel.GetWinner();
-            PlayerModel playerModel = _matchModel.GetPlayerModel(player);
-            PlayerInfoView info = _playersInfo.GetValueOrDefault(player);
+			if (_matchModel.PlayersCount == 1)
+				winner = _matchModel.CurrentPlayers[0];
+            else
+            {
+                if(!localModel.Folded.Value)
+                {
+					CombinationModel combination = await new CombinationReader().GetCombination(localModel, _matchModel.TableCards);
+					photonView.RPC("AddPlayerCombination", RpcTarget.All, PhotonNetwork.LocalPlayer, combination);
+				}
+				await Task.Delay(_delayOperation);
+				winner = _matchModel.GetWinner();
+			}
+
+            PlayerModel winnerModel = _matchModel.GetPlayerModel(winner);
+            PlayerInfoView info = _playersInfo.GetValueOrDefault(winner);
 			info.ChangeColorText(new Color(1, 0.5f, 0));
 
-			await _bankPresenter.GiveAwayTheWinnings(playerModel);
+			await _bankPresenter.GiveAwayTheWinnings(winnerModel);
 
             if (!localModel.Folded.Value)
             {
@@ -125,37 +152,34 @@ namespace PokerMatch
             }
             await Task.Delay(_delayBetweenMatch);
 			info.ChangeColorText(Color.white);
-			NewDistribution();          
-        }
 
-        private void NewDistribution()
-        {
-            for (int i = 0; i < _matchModel.PlayersCount; i++)
-                _matchModel.GetPlayerModel(_matchModel.CurrentPlayers[i])?.ResetModel();
+            if(localModel.Money.Value == 0)
+                PlayerOutPun(PhotonNetwork.LocalPlayer);
 
-            if(PhotonNetwork.IsMasterClient)
-                PhotonNetwork.DestroyAll();
+			if (PhotonNetwork.IsMasterClient)
+				PhotonNetwork.DestroyAll();
 
-            _matchModel.SetMatchPhase(Phase.NewDistribution);
-        }
+			_matchModel.SetMatchPhase(Phase.NewDistribution);
+		}
 
-        public void PlayerOutPun(Player player)
-        {
-            photonView.RPC("PlayerOut", player);
-            photonView.RPC("RemovePlayer", RpcTarget.All, player);
-        }
+        public void PlayerOutPun(Player player) => photonView.RPC("PlayerOut", RpcTarget.All, player);  
 
-        public void UpdatePlayerRatePun(RpcTarget target, Player player, int newRate) => photonView.RPC("UpdatePlayerRate", target, player, newRate);
+        public void UpdatePlayerRatePun(Player player, int newRate, bool canChangePlayer = true) 
+            => photonView.RPC("UpdatePlayerRate", RpcTarget.All, player, newRate, canChangePlayer);   
 
         [PunRPC]
-        public void UpdatePlayerRate(Player player, int newRate)
+        public void UpdatePlayerRate(Player player, int newRate, bool canChangePlayer = true)
         {
             PlayerModel playerModel = _matchModel.GetPlayerModel(player);
             int currentRate = playerModel.Rate.Value;
             playerModel.Raises(newRate);
 
             if (newRate + currentRate > BankModel.CurrentRate)
-                _bankPresenter.ChangeRate(newRate + currentRate);
+            {
+				_bankPresenter.ChangeRate(newRate + currentRate);
+                if (canChangePlayer)
+                    _matchModel.CurrentBetPlayer = player;
+			}
 
             if (newRate > 0)
                 _bankPresenter.AddMoney(newRate);
@@ -177,17 +201,18 @@ namespace PokerMatch
         public void SetMatchPhase(Phase phase)
         {
             if (phase == Phase.NewDistributionAfterBet && _matchModel.DesiredCardCount > 5)
-                _matchModel.SetMatchPhase(Phase.OpeningCard);
+                _matchModel.SetMatchPhase(Phase.EndMatch);
             else
                 _matchModel.SetMatchPhase(phase);
         }
 
         [PunRPC]
-        public void PlayerOut()
+        public void PlayerOut(Player player)
         {
-            _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer).Folded.Value = true;
-            PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.LocalPlayer);
-        }
+            _matchModel.GetPlayerModel(player).Folded.Value = true;
+            PhotonNetwork.DestroyPlayerObjects(player);
+			_matchModel.RemovePlayer(player);
+		}
 
         [PunRPC]
         public void AddTableCard(CardModel cardModel) => _matchModel.AddCardTable(cardModel);
@@ -198,7 +223,5 @@ namespace PokerMatch
 		[PunRPC]
         public void AddPlayerModel(Player player, PlayerModel playerModel) => _matchModel.AddPlayerModel(player, playerModel);
 
-        [PunRPC]
-        public void RemovePlayer(Player player) => _matchModel.RemovePlayer(player);
 	}
 }

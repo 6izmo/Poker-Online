@@ -21,7 +21,7 @@ namespace Players
         {
             Waiting,
             Move
-        }
+		}
 
         private List<CardPresenter> _cardsInfo = new();
 
@@ -39,7 +39,11 @@ namespace Players
 
         public PlayerState CurrentState { get; set; }
 
-        public PlayerModel(int startMoney)
+        public bool AllIn { get; private set; }
+
+        public event Action<bool> OnGotCards;
+
+        public PlayerModel(int startMoney)   
         {
             Rate = new();
 			Folded = new(false);
@@ -55,17 +59,24 @@ namespace Players
             {
                 _cardsInfo.Add(presenter);
                 if (_cardsInfo.Count == 2)
-                    Folded.Value = false;
-            }
+                    OnGotCards?.Invoke(true);
+			}
         }
 
         public void Raises(int value)
         {
             Money.Value -= value;
             Rate.Value += value;
+            if (Money.Value == 0)
+                AllIn = true;
         }
 
-        public void ResetModel() => _cardsInfo.Clear();
+        public void ResetModel()
+        {
+            _cardsInfo.Clear();
+            Folded.Value = false;
+            OnGotCards?.Invoke(false);
+		}
 
         public static byte[] Serialize(object customType)
         {

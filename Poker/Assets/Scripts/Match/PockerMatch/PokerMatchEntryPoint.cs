@@ -88,8 +88,8 @@ namespace PokerMatch
 
 		private void OnDestroy()
 		{
-			_moveHandler.RemoveCallback();
-			_cardSpawner.RemoveCallback();
+			_moveHandler?.RemoveCallback();
+			_cardSpawner?.RemoveCallback();
 		}
     }
 }

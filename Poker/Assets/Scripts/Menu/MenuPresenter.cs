@@ -1,27 +1,28 @@
-using Settings;
+using System.Threading.Tasks;
 
 namespace Menu
 {
     public class MenuPresenter
     {
-        private PhotonConnecter _photonConnecter;
-        private SettingsPresenter _settingsPresenter;
         private MenuView _menuView;
 
-		public MenuPresenter(MenuView menuView, PhotonConnecter photonConnecter, SettingsPresenter settingsPresenter)
+		public MenuPresenter(MenuView menuView)
         {
-            _photonConnecter = photonConnecter;
-			_settingsPresenter = settingsPresenter;
             _menuView = menuView;
 
 			_menuView.OnPlayButtonClicked += LoadRoomsScene;
-			_menuView.OnInputedName += ConnectPlayer;
+			_menuView.OnInputedName += TryConnect;
         }
 
-        private void ConnectPlayer(string nickname)
+        private async void TryConnect(string playerName)
         {
-            _photonConnecter.PlayerConnect(nickname);
-            _settingsPresenter.OnConnectedPlayer();
+            bool response = PhotonConnecter.Instance.TryPlayerConnect(playerName);
+            _menuView.SwitchToConnectionPanel(true);
+            await Task.Delay(2000);
+            if (response)
+                _menuView.ActivateMainMenu();
+            else
+                _menuView.ActivateRepeatButton();
 		}
 
 		private void LoadRoomsScene() => SceneTransition.SwitchToScene("Rooms");
