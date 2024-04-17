@@ -73,9 +73,9 @@ namespace Players
 
         public void ResetModel()
         {
-            _cardsInfo.Clear();
-            Folded.Value = false;
-            OnGotCards?.Invoke(false);
+			Folded.Value = false;
+			OnGotCards?.Invoke(false);
+			_cardsInfo.Clear();
 		}
 
         public static byte[] Serialize(object customType)

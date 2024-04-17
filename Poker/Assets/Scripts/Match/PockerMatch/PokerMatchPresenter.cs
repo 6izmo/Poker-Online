@@ -8,6 +8,7 @@ using Photon.Realtime;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Phase = PokerMatch.PokerMatchModel.MatchPhase;
+using TMPro;
 
 namespace PokerMatch
 {
@@ -82,36 +83,38 @@ namespace PokerMatch
 			for (int i = 0; i < _matchModel.PlayersCount; i++)
 			{
 				PlayerModel playerModel = _matchModel.GetPlayerModel(_matchModel.CurrentPlayers[i]);
+				PlayerInfoView info = _playersInfo.GetValueOrDefault(_matchModel.CurrentPlayers[i]);
+                info.ChangeColorText(Color.white);
 				playerModel.Rate.Value = 0;
-                if (playerModel.AllIn)
+				if (playerModel.AllIn)
 					allIn++;
 			}
 
 			_bankPresenter.ChangeRate(0);
-			if (!PhotonNetwork.IsMasterClient)
-				return;
-
-			if (allIn == _matchModel.PlayersCount - 1)
+			if (PhotonNetwork.IsMasterClient)
             {
-                if(_matchModel.DesiredCardCount > 5)
-                {
-					SetMatchPhasePun(Phase.EndMatch);
+				if (allIn == _matchModel.PlayersCount - 1)
+				{
+					if (_matchModel.DesiredCardCount > 5)
+					{
+						SetMatchPhasePun(Phase.EndMatch);
+						return;
+					}
+					SetMatchPhasePun(Phase.NewDistributionAfterBet);
 					return;
-                }
-				SetMatchPhasePun(Phase.NewDistributionAfterBet);
-				return;
-            }
-
-			SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);   
+				}
+                photonView.RPC("SetStartPlayer", RpcTarget.All);
+				SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
+			}
         }
 
         private void StartNewBidding()
         {       
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
-            SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
-            SetBlinds(_matchModel.StartPlayer);
+            if (PhotonNetwork.IsMasterClient)
+            {
+				SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
+				SetBlinds(_matchModel.StartPlayer);
+			}
         }
 
         private void SetBlinds(Player player)
@@ -151,7 +154,6 @@ namespace PokerMatch
                     localModel.Cards[i].Showdown();
             }
             await Task.Delay(_delayBetweenMatch);
-			info.ChangeColorText(Color.white);
 
             if(localModel.Money.Value == 0)
                 PlayerOutPun(PhotonNetwork.LocalPlayer);
@@ -215,6 +217,9 @@ namespace PokerMatch
 		}
 
         [PunRPC]
+        public void SetStartPlayer() => _matchModel.SetStartPlayer();
+
+		[PunRPC]
         public void AddTableCard(CardModel cardModel) => _matchModel.AddCardTable(cardModel);
 
         [PunRPC]

@@ -80,8 +80,8 @@ namespace Players
 
         public void UpdateCallButton(int currentRate)
         {
-            int callSum = currentRate - _playerModel.Rate.Value;
-            _callText.text = callSum <= 0 ? "CHECK": "CALL " + $"({callSum})";
+            int callSum = currentRate <= _playerModel.Money.Value ? currentRate - _playerModel.Rate.Value : _playerModel.Money.Value;
+			_callText.text = callSum <= 0 ? "CHECK": "CALL " + $"({callSum})";
         }
     }
 }

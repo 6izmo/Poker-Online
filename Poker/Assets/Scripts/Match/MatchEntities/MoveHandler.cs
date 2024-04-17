@@ -6,6 +6,7 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Move = Players.PlayerModel.PlayerMove;
 using State = Players.PlayerModel.PlayerState;
+using UnityEngine;
 
 public class MoveHandler : IOnEventCallback
 {
@@ -28,62 +29,60 @@ public class MoveHandler : IOnEventCallback
         object[] datas = (object[])photonEvent.CustomData;
         Player player = (Player)datas[0];
         Move currentMove = (Move)datas[1];
-        PlayerModel localModel = (PlayerModel)datas[2];
+        PlayerModel thisModel = (PlayerModel)datas[2];
         _matchPresenter.SetPlayerStatePun(player, State.Waiting);
         int playerIndex = _matchModel.CurrentPlayers.IndexOf(player);
-        
+
 		switch (currentMove)    
         {
             case Move.Fold:
                 _matchPresenter.PlayerOutPun(player);
-                localModel.Folded.Value = true;
+                thisModel.Folded.Value = true;
 				playerIndex--;
 				break;
             case Move.Call:
-                int rate = BankModel.CurrentRate - localModel.Rate.Value;
+				if (BankModel.CurrentRate > thisModel.Money.Value)
+                    goto case Move.AllIn;
+                int rate = BankModel.CurrentRate - thisModel.Rate.Value;
                 _matchPresenter.UpdatePlayerRatePun(player, rate);  
-                localModel.Raises(rate);
+                thisModel.Raises(rate);
                 break;    
             case Move.Raise:
-                _matchPresenter.UpdatePlayerRatePun(player, localModel.RaiseSum.Value);
-                localModel.Raises(localModel.RaiseSum.Value);
+                _matchPresenter.UpdatePlayerRatePun(player, thisModel.RaiseSum.Value);
+                thisModel.Raises(thisModel.RaiseSum.Value);     
                 break;
             case Move.AllIn:
-                _matchPresenter.UpdatePlayerRatePun(player, localModel.Money.Value);
-                localModel.Raises(localModel.Money.Value);
+				_matchPresenter.UpdatePlayerRatePun(player, thisModel.Money.Value);
+                thisModel.Raises(thisModel.Money.Value);
                 break;
         }
 
         Player nextPlayer = default;
-        PlayerModel nextPlayerModel = default;
+        PlayerModel nextModel = default;
 
-        for (int i = 0; i < _matchModel.PlayersCount; i++)
+		for (int i = playerIndex + 1; i <= _matchModel.PlayersCount; i++)
         {
-            if (_matchModel.CurrentPlayers[i] == player)
-                continue;
-
             nextPlayer = playerIndex + 1 >= _matchModel.PlayersCount ? _matchModel.CurrentPlayers[0] : _matchModel.CurrentPlayers[playerIndex + 1];
-            nextPlayerModel = _matchModel.GetPlayerModel(nextPlayer);
-
-            if(nextPlayerModel.Money.Value != 0 || !nextPlayerModel.Folded.Value)
+            nextModel = _matchModel.GetPlayerModel(nextPlayer);
+            if((nextModel.Money.Value != 0 && !nextModel.Folded.Value) || nextModel.AllIn)
                 break;
 
 			playerIndex = _matchModel.CurrentPlayers.IndexOf(nextPlayer);
 		}
 
-		if(localModel.Folded.Value && _matchModel.PlayersCount <= 1)
+		if(thisModel.Folded.Value && _matchModel.PlayersCount <= 1) 
         {
 			_matchPresenter.SetMatchPhasePun(PokerMatchModel.MatchPhase.EndMatch);
             return;
 		}
 
-		if (nextPlayer == _matchModel.CurrentBetPlayer && (localModel.Rate.Value == nextPlayerModel.Rate.Value ||  localModel.Folded.Value))
+		if (nextPlayer == _matchModel.CurrentBetPlayer && (thisModel.Rate.Value == nextModel.Rate.Value ||  thisModel.Folded.Value || (thisModel.AllIn &&  (nextModel.Money.Value == BankModel.CurrentRate || nextModel.AllIn))))
         {
 			_matchPresenter.SetMatchPhasePun(PokerMatchModel.MatchPhase.NewDistributionAfterBet);
 			return;
-		}
+		}    
 
-		if (localModel.Folded.Value && player == _matchModel.CurrentBetPlayer)
+		if (thisModel.Folded.Value && player == _matchModel.CurrentBetPlayer)
 			_matchModel.CurrentBetPlayer = nextPlayer;
 
 		_matchPresenter.SetPlayerStatePun(nextPlayer, State.Move);

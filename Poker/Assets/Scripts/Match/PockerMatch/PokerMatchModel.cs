@@ -1,3 +1,4 @@
+using Bank;
 using Cards;
 using System;
 using Players;
@@ -7,9 +8,6 @@ using System.Linq;
 using UnityEngine;
 using Photon.Realtime;
 using System.Collections.Generic;
-using Bank;
-using Unity.VisualScripting.FullSerializer;
-using Unity.VisualScripting;
 
 namespace PokerMatch
 {
@@ -27,7 +25,6 @@ namespace PokerMatch
         private Dictionary<CombinationModel, Player> _playerCombination = new();
         private List<Player> _currentPlayers = new();
         private List<CardModel> _tableCards = new();
-        private int _countPlayerFolded = 0;
         private int _startPlayerIndex;
 
         public event Action<CardData> OnNewDistribution;
@@ -83,8 +80,6 @@ namespace PokerMatch
         {
             if(_currentPlayers.Contains(player))
 				_currentPlayers.Remove(player);
-            _countPlayerFolded++;
-            Debug.Log(_countPlayerFolded);
 		}
 
         public Player GetWinner()
@@ -113,9 +108,6 @@ namespace PokerMatch
                     OnBetSettings?.Invoke();
                     break;
                 case MatchPhase.NewDistributionAfterBet:       
-                    SetStartPlayer();
-					CurrentBetPlayer = StartPlayer;    
-					Debug.Log($"start player - {CurrentBetPlayer.NickName}");
 					OnNewDistributionAfterBet?.Invoke(CardData, DesiredCardCount);
 					DesiredCardCount++;
 					break;
@@ -125,11 +117,10 @@ namespace PokerMatch
 			}
         }
 
-        private void SetStartPlayer()
+        public void SetStartPlayer()
         {
 			PlayerModel playerModel = GetPlayerModel(StartPlayer);
-
-            if (playerModel.Money.Value != 0 && !playerModel.Folded.Value)
+            if ((playerModel.Money.Value != 0 && !playerModel.Folded.Value))
                 return;
 
 			for (int i = StartPlayer.ActorNumber; i <= PhotonNetwork.PlayerList.Length; i++)    
@@ -147,20 +138,25 @@ namespace PokerMatch
 					break; 
 				}
 			}
-            StartPlayer = PhotonNetwork.PlayerList[_startPlayerIndex];   
-        }
+            StartPlayer = PhotonNetwork.PlayerList[_startPlayerIndex];
+			CurrentBetPlayer = StartPlayer;
+		}
 
         private void TryNewMatch()
         {
 			DesiredCardCount = 3;
-            _countPlayerFolded = 0;
 			_tableCards.Clear();  
 			_playerCombination.Clear();
 
-			bool response = GetPlayers();
+			bool response = CheckPlayers();
 			if (!response)
+            {
+				Player winner = _currentPlayers[0];
+				OnEndedGame?.Invoke(winner.NickName);
+				_playerModels[winner].Folded.Value = false;
 				return;
-			
+			}
+
 			SmallBlindPlayerId++;
 			if (SmallBlindPlayerId >= PlayersCount)
 				SmallBlindPlayerId = 0;
@@ -171,25 +167,22 @@ namespace PokerMatch
 			OnNewDistribution?.Invoke(CardData);
 		}   
 
-        private bool GetPlayers()
+        private bool CheckPlayers()
         {
 			_currentPlayers = PhotonNetwork.PlayerList.ToList();
             for (int i = 0; i < PlayersCount; i++)
             {
 				PlayerModel model = GetPlayerModel(_currentPlayers[i]);
 				if (model.Money.Value < BankModel.BigBlind)
-                    _currentPlayers.Remove(_currentPlayers[i]);
+                {
+                    model.Folded.Value = true; 
+					_currentPlayers.Remove(_currentPlayers[i]);
+				}
 				else
-					model.ResetModel();  
+					model.ResetModel();   
 			}
-            if (PlayersCount == 1)
-            {
-                Player winner = _currentPlayers[0];
-				OnEndedGame?.Invoke(winner.NickName);
-                _playerModels[winner].Folded.Value = false;
-                return false;
-			}
-            return true;
+            bool response = PlayersCount == 1 ? false : true;
+            return response;
 		}
     }
 }

@@ -28,7 +28,7 @@ namespace Players
             _playerView.OnTurnedOver += TurnOverCards;
             _playerView.OnMoved += OnMove;
         }
-        
+
         private void SetRaise(int rate) => SetRaiseValue(rate - _playerModel.Rate.Value + BankModel.BigBlind);
 
 		private void SetRaiseValue(int value)
