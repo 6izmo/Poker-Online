@@ -82,6 +82,11 @@ MonoBehaviour:
   - SendEventMessage
   - SendMessagePun
   - SetStartPlayer
+  - AddPlayerCombinationPun
+  - AddPlayerModelPun
+  - AddTableCardPun
+  - PlayerOutPun
+  - SetStartPlayerPun
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

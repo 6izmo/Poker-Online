@@ -10,18 +10,15 @@ namespace PokerMatch
 {
     public class Dealer 
     {
-        public event Action<List<CardModel>> OnDealingEnded;
+        public static event Action<List<CardModel>> OnDealingEnded;
+        private static CardDeck _cardDeck = new();
 
-        private CardDeck _cardDeck;
+		private static int _timeDelay = 750;
+        private static int _currentCountCard = 0;
 
-		private int _timeDelay = 750;
-        private int _currentCountCard = 0;
-
-        public async void StartDealing(CardData cardData, List<Player> players)
+        public static async void StartDealing(CardData cardData, List<Player> players)
         {
-            _cardDeck = new();
             _currentCountCard = 0;
-
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
@@ -39,7 +36,7 @@ namespace PokerMatch
 			}
 		}
 
-        public async void TableDealing(CardData cardData, int countCard)
+        public static async void TableDealing(CardData cardData, int countCard)
         {
 			List<CardModel> tableModel = new();
 			if (PhotonNetwork.IsMasterClient)

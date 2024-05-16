@@ -10,12 +10,12 @@ using UnityEngine;
 
 public class MoveHandler : IOnEventCallback
 {
-    private PokerMatchPresenter _matchPresenter;
-    private PokerMatchModel _matchModel;
+    private MatchService _matchService;
+    private MatchModel _matchModel;
 
-	public MoveHandler(PokerMatchPresenter presenter, PokerMatchModel model)
+	public MoveHandler(MatchService matchService, MatchModel model)
     {
-        _matchPresenter = presenter;
+        _matchService = matchService;
         _matchModel = model;
 
 		PhotonNetwork.AddCallbackTarget(this);
@@ -30,13 +30,13 @@ public class MoveHandler : IOnEventCallback
         Player player = (Player)datas[0];
         Move currentMove = (Move)datas[1];
         PlayerModel thisModel = (PlayerModel)datas[2];
-        _matchPresenter.SetPlayerStatePun(player, State.Waiting);
+        _matchService.SetPlayerStatePun(player, State.Waiting);
         int playerIndex = _matchModel.CurrentPlayers.IndexOf(player);
 
 		switch (currentMove)    
         {
             case Move.Fold:
-                _matchPresenter.PlayerOutPun(player);
+                _matchService.PlayerOutPun(player);
                 thisModel.Folded.Value = true;
 				playerIndex--;
 				break;
@@ -44,17 +44,17 @@ public class MoveHandler : IOnEventCallback
 				if (BankModel.CurrentRate > thisModel.Money.Value)
                     goto case Move.AllIn;
                 int rate = BankModel.CurrentRate - thisModel.Rate.Value;
-                _matchPresenter.UpdatePlayerRatePun(player, rate);  
+                _matchService.UpdatePlayerRatePun(player, rate);  
                 thisModel.Raises(rate);
                 break;    
             case Move.Raise:
-                _matchPresenter.UpdatePlayerRatePun(player, thisModel.RaiseSum.Value);
+                _matchService.UpdatePlayerRatePun(player, thisModel.RaiseSum.Value);
                 thisModel.Raises(thisModel.RaiseSum.Value);     
                 break;
             case Move.AllIn:
-				_matchPresenter.UpdatePlayerRatePun(player, thisModel.Money.Value);
+				_matchService.UpdatePlayerRatePun(player, thisModel.Money.Value);
                 thisModel.Raises(thisModel.Money.Value);
-                break;
+                break;   
         }
 
         Player nextPlayer = default;
@@ -64,7 +64,7 @@ public class MoveHandler : IOnEventCallback
         {
             nextPlayer = playerIndex + 1 >= _matchModel.PlayersCount ? _matchModel.CurrentPlayers[0] : _matchModel.CurrentPlayers[playerIndex + 1];
             nextModel = _matchModel.GetPlayerModel(nextPlayer);
-            if((nextModel.Money.Value != 0 && !nextModel.Folded.Value) || nextModel.AllIn)
+            if((nextModel.Money.Value != 0 && !nextModel.Folded.Value) || (nextModel.AllIn && nextPlayer == _matchModel.CurrentBetPlayer))
                 break;
 
 			playerIndex = _matchModel.CurrentPlayers.IndexOf(nextPlayer);
@@ -72,20 +72,21 @@ public class MoveHandler : IOnEventCallback
 
 		if(thisModel.Folded.Value && _matchModel.PlayersCount <= 1) 
         {
-			_matchPresenter.SetMatchPhasePun(PokerMatchModel.MatchPhase.EndMatch);
+			_matchService.SetMatchPhasePun(MatchModel.MatchPhase.EndMatch);
             return;
 		}
 
-		if (nextPlayer == _matchModel.CurrentBetPlayer && (thisModel.Rate.Value == nextModel.Rate.Value ||  thisModel.Folded.Value || (thisModel.AllIn &&  (nextModel.Money.Value == BankModel.CurrentRate || nextModel.AllIn))))
+		if (nextPlayer == _matchModel.CurrentBetPlayer && (thisModel.Rate.Value == nextModel.Rate.Value ||  thisModel.Folded.Value ||
+            (thisModel.AllIn && (nextModel.Money.Value == BankModel.CurrentRate || nextModel.AllIn))))
         {
-			_matchPresenter.SetMatchPhasePun(PokerMatchModel.MatchPhase.NewDistributionAfterBet);
+			_matchService.SetMatchPhasePun(MatchModel.MatchPhase.NewDistributionAfterBet);
 			return;
 		}    
 
-		if (thisModel.Folded.Value && player == _matchModel.CurrentBetPlayer)
-			_matchModel.CurrentBetPlayer = nextPlayer;
+		if (thisModel.Folded.Value && player == _matchModel.CurrentBetPlayer)   
+			_matchModel.CurrentBetPlayer = nextPlayer; 
 
-		_matchPresenter.SetPlayerStatePun(nextPlayer, State.Move);
+		_matchService.SetPlayerStatePun(nextPlayer, State.Move);
     }
 
     public void RemoveCallback() => PhotonNetwork.RemoveCallbackTarget(this);   

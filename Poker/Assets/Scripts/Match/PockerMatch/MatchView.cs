@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace PokerMatch
 {
-    public class PokerMatchView : MonoBehaviour
+    public class MatchView : MonoBehaviour
     {
         [SerializeField] private GameObject _cardDeck;
 

@@ -26,11 +26,7 @@ public class PlayerInfoView : MonoBehaviour
         gameObject.name = player.NickName;
 	}
 
-    public void ChangeColorText(Color color)
-    {
-        Color newColor = _nickName.color == Color.white ? color : Color.white;
-        _nickName.color = newColor;
-    }
+    public void ChangeColorText(Color color) => _nickName.color = color;
 
 	public void SetPosition(PlayerItemPosition position, RectTransform parent)
     {

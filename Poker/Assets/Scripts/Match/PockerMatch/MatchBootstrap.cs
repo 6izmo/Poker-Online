@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace PokerMatch
 {
-    public class PokerMatchEntryPoint : MonoBehaviour
+    public class MatchBootstrap : MonoBehaviour
     {
         [Header("Data")]
         [SerializeField] private PokerPlayerData _playerData;
@@ -29,38 +29,33 @@ namespace PokerMatch
         [Space]
         [SerializeField] private PlayerView _playerView;
 
-        private PokerMatchPresenter _pokerPresenter;
-        private PokerMatchView _pokerMatchView;
+        [SerializeField] private MatchService _matchService;
+        [Space]
+        [SerializeField] private MatchView _pokerMatchView;
 
+		private MatchPresenter _pokerPresenter;
         private MoveHandler _moveHandler;
         private CardSpawner _cardSpawner;
 
         private void Awake()
         {
-            _pokerPresenter = GetComponent<PokerMatchPresenter>();
-            _pokerMatchView = GetComponent<PokerMatchView>();
-            PlayerListInit();
-        }
+			PlayerListModel playerListModel = new(_playerListView, _playerData.PlayerItemPrefab);
+			_playerListPresenter.Init(playerListModel, _playerListView);
+			_playerListView.Init(_playerListPresenter);
 
-        private void PlayerListInit()
-        {
-            PlayerListModel playerListModel = new(_playerListView, _playerData.PlayerItemPrefab);
-            _playerListPresenter.Init(playerListModel, _playerListView);
-            _playerListView.Init(_playerListPresenter);
+			_playerListPresenter.OnAllPlayersReady += StartPokerMatch;
+		}
 
-            _playerListPresenter.OnAllPlayersReady += StartPokerMatch;
-        }
-
-        public void StartPokerMatch(Dictionary<Player, PlayerInfoView> playersInfo)
+        private void StartPokerMatch(Dictionary<Player, PlayerInfoView> playersInfo)
         {
             PlayerModel playerModel = new(_pokerConfig.StartPlayerMoney);
 			new PlayerPresenter(playerModel, _playerView);
             _playerView.Init(playerModel);
-            PokerMatchInit();
-            _pokerPresenter.StartMatch(playerModel, playersInfo);   
+            PokerMatchInit(playersInfo);
+            _pokerPresenter.StartMatch(playerModel);   
         }
 
-        private void PokerMatchInit()
+        private void PokerMatchInit(Dictionary<Player, PlayerInfoView> playersInfo)
         {
             _playerData.Init(PhotonNetwork.LocalPlayer.ActorNumber);
             _cardData.Init();
@@ -68,12 +63,11 @@ namespace PokerMatch
             BankModel bankModel = new(_pokerConfig.SmallBlind, _pokerConfig.BigBlind);
 			BankPresenter bankPresenter = new(bankModel, _bankView);
 
-            PokerMatchModel holdem = new(_playerData, _cardData);
+            MatchModel holdem = new(_playerData, _cardData, playersInfo);
 			_cardSpawner = new(holdem);
-            Dealer dealer = new Dealer();
-
-            _pokerPresenter.Init(holdem, _pokerMatchView, bankPresenter, dealer);
-			_moveHandler = new(_pokerPresenter, holdem);
+			_matchService.Init(holdem, bankPresenter);
+			_pokerPresenter = new(holdem, _pokerMatchView, _matchService, bankPresenter);
+			_moveHandler = new(_matchService, holdem);
 
 			RegisterType();
 		}

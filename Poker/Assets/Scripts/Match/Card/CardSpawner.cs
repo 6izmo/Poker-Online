@@ -9,9 +9,9 @@ namespace Cards
 {
     public class CardSpawner : IOnEventCallback
     {
-        private PokerMatchModel _pokerModel;
+        private MatchModel _pokerModel;
 
-        public CardSpawner(PokerMatchModel pokerModel)
+        public CardSpawner(MatchModel pokerModel)
         {
             _pokerModel = pokerModel;
             PhotonNetwork.AddCallbackTarget(this);
