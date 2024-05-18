@@ -11,14 +11,15 @@ namespace PokerMatch
     public class Dealer 
     {
         public static event Action<List<CardModel>> OnDealingEnded;
-        private static CardDeck _cardDeck = new();
+        private static CardDeck _cardDeck;
 
 		private static int _timeDelay = 750;
         private static int _currentCountCard = 0;
 
         public static async void StartDealing(CardData cardData, List<Player> players)
         {
-            _currentCountCard = 0;
+			_cardDeck = new();
+			_currentCountCard = 0;
             if (!PhotonNetwork.IsMasterClient)
                 return;
 

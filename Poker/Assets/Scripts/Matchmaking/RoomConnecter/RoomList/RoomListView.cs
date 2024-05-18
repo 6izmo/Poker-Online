@@ -10,22 +10,36 @@ namespace RoomList
         [SerializeField] private Transform _contentView;
         [Space]
         [SerializeField] private Button _leaveButton;
-        [SerializeField] private Button _createButton;
-        [SerializeField] private Button _joinButton;
-        [Space]
+        [SerializeField] private Button _sendButton;
+		[SerializeField] private Button _joinRandomButton;
+		[Space]
         [SerializeField] private TMP_InputField _inputField;
 
         public event Action<string> OnRoomCreated;
         public event Action<string> OnRoomJoined;
+        public event Action OnRoomRandomJoined;
+
         public event Action OnExit;
+
+        private bool _isJoinedByName = false;
 
         public void Init()
         {
-            _leaveButton.onClick.AddListener(delegate { OnExit?.Invoke(); });
-            _createButton.onClick.AddListener(delegate { OnRoomCreated?.Invoke(_inputField.text); });
-            _joinButton.onClick.AddListener(delegate { OnRoomJoined?.Invoke(_inputField.text); });
-        }
+            _leaveButton.onClick.AddListener(() => OnExit?.Invoke());
+            _sendButton.onClick.AddListener(() => OnSendButton());
+            _joinRandomButton.onClick.AddListener(() => OnRoomRandomJoined?.Invoke());
+		}
 
-        public RoomItem ShowRoom(RoomItem prefab) => Instantiate(prefab, _contentView);
+        private void OnSendButton()
+        {
+            if (_isJoinedByName)
+                OnRoomJoined?.Invoke(_inputField.text);
+            else
+                OnRoomCreated?.Invoke(_inputField.text);
+		}
+
+        public void OnJoinedByName(bool value) => _isJoinedByName = value;
+
+		public RoomItem ShowRoom(RoomItem prefab) => Instantiate(prefab, _contentView);
     }
 }

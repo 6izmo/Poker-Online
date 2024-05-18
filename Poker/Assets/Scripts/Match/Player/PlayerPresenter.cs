@@ -26,9 +26,9 @@ namespace Players
 
             _playerView.OnRaiseChanged += SetRaiseValue;
             _playerView.OnTurnedOver += TurnOverCards;
-            _playerView.OnMoved += OnMove;
+            _playerView.OnMoved += OnMove;   
         }
-
+          
         private void SetRaise(int rate) => SetRaiseValue(rate - _playerModel.Rate.Value + BankModel.BigBlind);
 
 		private void SetRaiseValue(int value)
@@ -49,7 +49,7 @@ namespace Players
                 return;
 
             if (move == Move.Call)
-                _playerView.ChangeCallToCheck();
+                _playerView.ChangeCallToCheck();   
 
 			object[] content = new object[] { PhotonNetwork.LocalPlayer, move, _playerModel };
             RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };

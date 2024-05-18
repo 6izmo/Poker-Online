@@ -23,6 +23,7 @@ namespace PokerMatch
 
         private Dictionary<Player, PlayerModel> _playerModels = new();
         private Dictionary<Player, PlayerInfoView> _playersInfo = new();
+        private Dictionary<Player, PlayerItemPosition> _playerItemPosition = new();
         private Dictionary<CombinationModel, Player> _playerCombination = new();
         private List<Player> _currentPlayers = new();
         private List<CardModel> _tableCards = new();
@@ -34,17 +35,19 @@ namespace PokerMatch
         public event Action OnEndedMatch;
         public event Action<string> OnEndedGame;
 
-        public int SmallBlindPlayerId { get; private set; }
+        public int SmallBlindId { get; private set; }
 
         public Player StartPlayer { get; private set; }
 
-        public CardData CardData { get; private set; }
+        public Player BigBlindPlayer { get; private set; }
 
-        public int DesiredCardCount { get; private set; } = 3;
+        public Player CurrentBetPlayer { get; set; }
+
+        public CardData CardData { get; private set; }
 
         public PokerPlayerData PokerPlayerData { get; private set; }
 
-        public Player CurrentBetPlayer { get; set; }
+        public int DesiredCardCount { get; private set; } = 3;
 
         public int PlayersCount => _currentPlayers.Count;
 
@@ -58,7 +61,7 @@ namespace PokerMatch
             PokerPlayerData = data;
             CardData = cardData;
 
-            SmallBlindPlayerId = -1;
+            SmallBlindId = -1;
         }
 
         public void AddPlayerModel(Player player, PlayerModel model)
@@ -73,18 +76,33 @@ namespace PokerMatch
 				_playerCombination.Add(combination, player);
 		}
 
+        public Vector2 GetItemPosition(Player player)
+        {
+            if (player == PhotonNetwork.LocalPlayer)
+                return PokerPlayerData.LocalPosition.BlindPosition;
+            return _playerItemPosition.GetValueOrDefault(player).BlindPosition;
+        }
+
 		public PlayerInfoView GetPlayerInfo(Player player) => _playersInfo.GetValueOrDefault(player);
 
-        public void AddCardTable(CardModel cardModel)
+        public void AddCardTable(CardModel cardModel)  
         {
             if (!_tableCards.Contains(cardModel))
                 _tableCards.Add(cardModel);
         }
 
+        public void AddPlayerItemPosition(Player player, PlayerItemPosition position)
+        {
+            if (!_playerItemPosition.ContainsKey(player))
+                _playerItemPosition.Add(player, position);
+        }
+
         public void RemovePlayer(Player player)
         {
-            if (_currentPlayers.Contains(player))
-				_currentPlayers.Remove(player);
+            if (!_currentPlayers.Contains(player))
+                return;
+            PhotonNetwork.DestroyPlayerObjects(player);
+            _currentPlayers.Remove(player);
         }
 
         public Player GetWinner()
@@ -95,7 +113,7 @@ namespace PokerMatch
             List<CombinationModel> combinations = _playerCombination.Keys.ToList();
             combinations.Sort();
             CombinationModel highCombination = combinations.Last();
-            Debug.Log($"High combination:{highCombination};");
+            Debug.Log($"High combination:{highCombination};");     
             return _playerCombination.GetValueOrDefault(highCombination);
 		}
 
@@ -145,16 +163,11 @@ namespace PokerMatch
             CurrentBetPlayer = StartPlayer;
         }
 
-        private void ClearData()
+        private void SetNewData()
         {
 			DesiredCardCount = 3;
 			_tableCards.Clear();
 			_playerCombination.Clear();
-		}
-
-        private void SetNewData()
-        {
-            ClearData();
 			bool response = ClearPlayers();
             if (!response)
             {
@@ -164,12 +177,10 @@ namespace PokerMatch
                 return;
             }
 
-            SmallBlindPlayerId++;
-            if (SmallBlindPlayerId >= PlayersCount)
-                SmallBlindPlayerId = 0;
-
-            StartPlayer = _currentPlayers[SmallBlindPlayerId];
-            _startPlayerIndex = SmallBlindPlayerId;
+            SmallBlindId = SmallBlindId + 1 >= PlayersCount ? 0: SmallBlindId + 1;
+            _startPlayerIndex = SmallBlindId;
+            StartPlayer = _currentPlayers[_startPlayerIndex];
+            BigBlindPlayer = _startPlayerIndex == PlayersCount - 1 ? _currentPlayers[0] : _currentPlayers[_startPlayerIndex + 1];
 
             OnNewDistribution?.Invoke(CardData);
         }
@@ -183,7 +194,7 @@ namespace PokerMatch
                 if (model.Money.Value < BankModel.BigBlind)
                 {
                     model.Folded.Value = true;
-                    _currentPlayers.Remove(_currentPlayers[i]);
+                    RemovePlayer(_currentPlayers[i]);
                     i--;
                 }
                 else

@@ -87,6 +87,11 @@ MonoBehaviour:
   - AddTableCardPun
   - PlayerOutPun
   - SetStartPlayerPun
+  - ChangePlayerColorPun
+  - GiveAwayTheWinningsPun
+  - ResetRatePun
+  - ResetBankPun
+  - SetBlindPun
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

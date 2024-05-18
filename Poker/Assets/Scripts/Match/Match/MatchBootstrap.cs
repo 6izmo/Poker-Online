@@ -33,9 +33,9 @@ namespace PokerMatch
         [Space]
         [SerializeField] private MatchView _pokerMatchView;
 
-		private MatchPresenter _pokerPresenter;
         private MoveHandler _moveHandler;
         private CardSpawner _cardSpawner;
+        private PlayerModel _playerModel;
 
         private void Awake()
         {
@@ -43,32 +43,38 @@ namespace PokerMatch
 			_playerListPresenter.Init(playerListModel, _playerListView);
 			_playerListView.Init(_playerListPresenter);
 
-			_playerListPresenter.OnAllPlayersReady += StartPokerMatch;
+			_playerListPresenter.OnAllPlayersReady += MatchInitialize;
 		}
 
-        private void StartPokerMatch(Dictionary<Player, PlayerInfoView> playersInfo)
+        private void MatchInitialize(Dictionary<Player, PlayerInfoView> playersInfo)
         {
-            PlayerModel playerModel = new(_pokerConfig.StartPlayerMoney);
-			new PlayerPresenter(playerModel, _playerView);
-            _playerView.Init(playerModel);
-            PokerMatchInit(playersInfo);
-            _pokerPresenter.StartMatch(playerModel);   
-        }
+			DataInitialize();
+			PlayerInitialize();
 
-        private void PokerMatchInit(Dictionary<Player, PlayerInfoView> playersInfo)
-        {
-            _playerData.Init(PhotonNetwork.LocalPlayer.ActorNumber);
-            _cardData.Init();
-
-            BankModel bankModel = new(_pokerConfig.SmallBlind, _pokerConfig.BigBlind);
-			BankPresenter bankPresenter = new(bankModel, _bankView);
+			BankModel bankModel = new(_pokerConfig.SmallBlind, _pokerConfig.BigBlind);
+			BankPresenter bankPresenter = new(bankModel, _bankView);  
 
             MatchModel holdem = new(_playerData, _cardData, playersInfo);
 			_cardSpawner = new(holdem);
+
 			_matchService.Init(holdem, bankPresenter);
-			_pokerPresenter = new(holdem, _pokerMatchView, _matchService, bankPresenter);
+			_matchService.AddPlayerModel(_playerModel);
 			_moveHandler = new(_matchService, holdem);
 
+			new MatchPresenter(holdem, _pokerMatchView, _matchService, bankPresenter).StartMatch();
+		}
+
+        private void PlayerInitialize()
+        {
+			_playerModel = new(_pokerConfig.StartPlayerMoney);
+			new PlayerPresenter(_playerModel, _playerView);
+			_playerView.Init(_playerModel);
+		}
+
+        private void DataInitialize()
+        {
+			_playerData.Init(PhotonNetwork.LocalPlayer.ActorNumber);
+			_cardData.Init();
 			RegisterType();
 		}
 

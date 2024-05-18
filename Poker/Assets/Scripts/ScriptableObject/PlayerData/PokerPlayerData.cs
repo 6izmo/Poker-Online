@@ -15,6 +15,7 @@ public class PokerPlayerData : ScriptableObject
     private LinkedList<PlayerItemPosition> _linkedItemPos;
 
     public PlayerItemPosition LocalPosition => _localPlayerPosition;
+
     public PlayerItemPosition GetPosition(int index) => _linkedItemPos.ElementAtOrDefault(index);
 
     public void Init(int actorNumber)
@@ -40,6 +41,7 @@ public class PokerPlayerData : ScriptableObject
 public class PlayerItemPosition 
 {
     public Vector2 Positions;
+    public Vector2 BlindPosition;
     public float Rotation;
     public float Radius = 360;
 }

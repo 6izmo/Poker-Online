@@ -15,8 +15,8 @@ public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter>
         try
         {
 			PhotonNetwork.NickName = nickname;
-			PhotonNetwork.GameVersion = _gameVersion;
-			PhotonNetwork.AutomaticallySyncScene = false;
+			PhotonNetwork.GameVersion = _gameVersion;  
+			PhotonNetwork.AutomaticallySyncScene = true; 
 			PhotonNetwork.ConnectUsingSettings();
 			PhotonNetwork.ConnectToRegion($"{_regionToken}");
 		}

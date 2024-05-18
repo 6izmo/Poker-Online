@@ -1,8 +1,11 @@
 using Bank;
 using Cards;
+using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
+using UnityEngine;
 
 namespace Players
 {
@@ -17,7 +20,7 @@ namespace Players
             AllIn
         }
 
-        public enum PlayerState
+        public enum PlayerState 
         {
             Waiting,
             Move
@@ -48,8 +51,8 @@ namespace Players
             Rate = new();
 			Folded = new(false);
 			Money = new(startMoney);
-            LastAmountMoney = Money.Value;
-            CurrentState = PlayerState.Waiting;
+            LastAmountMoney = Money.Value;   
+            CurrentState = PlayerState.Waiting;   
             RaiseSum = new(BankModel.BigBlind);
         }
 
@@ -72,10 +75,13 @@ namespace Players
         }
 
         public void ResetModel()
-        {
+		{
+			Rate.Value = 0;
 			Folded.Value = false;
-			OnGotCards?.Invoke(false);
+            AllIn = false;  
+
 			_cardsInfo.Clear();
+			OnGotCards?.Invoke(false);  
 		}
 
         public static byte[] Serialize(object customType)

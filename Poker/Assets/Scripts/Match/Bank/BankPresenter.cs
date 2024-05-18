@@ -1,5 +1,4 @@
 using Players;
-using System.Threading.Tasks;
 
 namespace Bank
 {
@@ -28,11 +27,11 @@ namespace Bank
            
         public void ChangeRate(int rate) => _bankModel.ChangeRate(rate);
 
-        public Task GiveAwayTheWinnings(PlayerModel playerModel)
+        public void GiveAwayTheWinnings(PlayerModel playerModel)
         {
             playerModel.Money.Value += _bankModel.AmoutMoney.Value;
             _bankModel.AmoutMoney.Value = 0;
-            return Task.CompletedTask;
-        }
+            _bankModel.ChangeRate(0);
+		}
 	}
 }

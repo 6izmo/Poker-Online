@@ -56,9 +56,9 @@ namespace Players
 
         public void SetActiveCardButton(bool active) => _checkCardsButton.gameObject.SetActive(active);
 
-		public void SetActiveCommandPanel(bool folded) => _commandPanel.gameObject.SetActive(!folded);
+        public void SetActiveCommandPanel(bool folded) => _commandPanel.gameObject.SetActive(!folded);
 
-		public void UpdateRaiseButton(int sum) => _raiseText.text = $"RAISE({sum})";
+        public void UpdateRaiseButton(int sum) => _raiseText.text = $"RAISE({sum})";
 
         public void ChangeCallToCheck() => _callText.text = "CHECK";
 
