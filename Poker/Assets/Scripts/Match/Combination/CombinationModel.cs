@@ -4,12 +4,14 @@ namespace Combination
 {
 	public class CombinationModel : IComparable<CombinationModel>
 	{
-		public CombinationType CombinationType;
-		public int CombinataionRank;
+		public int CardWeight { get; private set; }
+        public CombinationType CombinationType { get; private set; }
+        public int CombinataionRank { get; private set; }
 
-		public CombinationModel(CombinationType combinationType, int combinataionRank)
+        public CombinationModel(int cardWeight, CombinationType combinationType, int combinataionRank)
 		{
-			CombinationType = combinationType;
+			CardWeight = cardWeight;
+            CombinationType = combinationType;
 			CombinataionRank = combinataionRank;
 		}
 
@@ -18,38 +20,38 @@ namespace Combination
 			int result = CombinationType > other.CombinationType ? 1 : -1;
 			if (CombinationType == other.CombinationType)
 			{
-				int thisRank = CombinataionRank == 0 ? 13 : CombinataionRank;
-				int otherRank = other.CombinataionRank == 0 ? 13 : CombinataionRank;
+				int thisRank = CombinataionRank == 0 ? 13 : CombinataionRank; 
+				int otherRank = other.CombinataionRank == 0 ? 13 : other.CombinataionRank;   
 				result = thisRank > otherRank ? 1 : -1;
 				if (thisRank == otherRank)
-					result = 0;
+					result = CardWeight > other.CardWeight ? 1: -1;
 			}
 			return result;
 		}
 
-		public static object Deserialize(byte[] data) => new CombinationModel((CombinationType)(int)data[0], data[1]);
+		public static object Deserialize(byte[] data) => new CombinationModel(data[0], (CombinationType)(int)data[1], data[2]);
 
 		public static byte[] Serialize(object customType)
 		{
 			var myType = (CombinationModel)customType;
-			return new byte[] { (byte)myType.CombinationType, (byte)myType.CombinataionRank };
+			return new byte[] {(byte)myType.CardWeight, (byte)myType.CombinationType, (byte)myType.CombinataionRank };
 		}
 
 		public override string ToString()
 		{
-			string rank = $"{CombinataionRank + 1}";
+			string rank = $"{CombinataionRank + 1}"; 
 
 			if (CombinataionRank == 0)
 				rank = "Туз";
 			if (CombinataionRank == 12)
 				rank = "Король";
 			if (CombinataionRank == 11)
-				rank = "Дама";
+				rank = "Дама";  
 			if (CombinataionRank == 10)
 				rank = "Валет";
 
-			return $"{CombinationType}-{rank}";
+			return $"Weight - {CardWeight};  {CombinationType}-{rank}";
 		}
-	}
+	}  
 }
 		

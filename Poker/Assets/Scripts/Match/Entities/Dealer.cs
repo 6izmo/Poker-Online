@@ -8,20 +8,22 @@ using System.Collections.Generic;
 
 namespace PokerMatch
 {
-    public class Dealer 
+    public class Dealer
     {
         public static event Action<List<CardModel>> OnDealingEnded;
+
         private static CardDeck _cardDeck;
 
 		private static int _timeDelay = 750;
         private static int _currentCountCard = 0;
 
-        public static async void StartDealing(CardData cardData, List<Player> players)
+        public static async Task StartDealing(CardData cardData, List<Player> players)  
         {
-			_cardDeck = new();
-			_currentCountCard = 0;
             if (!PhotonNetwork.IsMasterClient)
                 return;
+
+            _cardDeck = new();
+			_currentCountCard = 0;
 
 			for (int j = 0; j < 2; j++)
 			{
@@ -35,30 +37,31 @@ namespace PokerMatch
 					await Task.Delay(_timeDelay);
                 }
 			}
-		}
+			await Task.CompletedTask;
+        }
 
         public static async void TableDealing(CardData cardData, int countCard)
         {
-			List<CardModel> tableModel = new();
-			if (PhotonNetwork.IsMasterClient)
-            {
-				List<CardPresenter> tableCards = new();
-				for (int currentCard = _currentCountCard; currentCard < countCard; currentCard++)
-				{
-					CardModel newCardModel = _cardDeck.GetRandomCard();
-					object[] dataPos = new object[] { EventCode.TableCard, cardData.CardDeckPosition, cardData.GetTableCardPosition(currentCard), 360f };
-					GameObject cardObject = PhotonNetwork.InstantiateRoomObject(cardData.TableCardPrefab.name, cardData.GetTableCardPosition(currentCard), Quaternion.identity, 0, dataPos);
-					CardPresenter cardPresenter = cardObject.GetComponent<CardPresenter>();
-					cardPresenter.Init(newCardModel);
-					tableCards.Add(cardPresenter);
-					tableModel.Add(newCardModel);
-					await Task.Delay(_timeDelay);
-				}
-				for (int i = 0; i < tableCards.Count; i++)
-                    await tableCards[i].Open(true);
+			if (!PhotonNetwork.IsMasterClient)
+				return;
 
-                _currentCountCard = countCard;
-			}            
+			List<CardModel> tableModel = new();
+            List<CardPresenter> tableCards = new();
+            for (int currentCard = _currentCountCard; currentCard < countCard; currentCard++)
+            {
+                CardModel newCardModel = _cardDeck.GetRandomCard();
+                object[] dataPos = new object[] { EventCode.TableCard, cardData.CardDeckPosition, cardData.GetTableCardPosition(currentCard), 360f };
+                GameObject cardObject = PhotonNetwork.InstantiateRoomObject(cardData.TableCardPrefab.name, cardData.GetTableCardPosition(currentCard), Quaternion.identity, 0, dataPos);
+                CardPresenter cardPresenter = cardObject.GetComponent<CardPresenter>();
+                cardPresenter.Init(newCardModel);
+                tableCards.Add(cardPresenter);
+                tableModel.Add(newCardModel);
+                await Task.Delay(_timeDelay);
+            }
+            for (int i = 0; i < tableCards.Count; i++)
+                await tableCards[i].Open(true);
+
+            _currentCountCard = countCard;
             OnDealingEnded?.Invoke(tableModel);
         }
     }

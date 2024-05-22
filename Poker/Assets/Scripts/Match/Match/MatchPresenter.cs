@@ -9,26 +9,24 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Phase = PokerMatch.MatchModel.MatchPhase;
 
-namespace PokerMatch
+namespace PokerMatch  
 {
-    public class MatchPresenter
+    public class MatchPresenter : Presenter
     {
         private MatchView _matchView;
 		private MatchService _matchService;
 		private MatchModel _matchModel;
-        private BankPresenter _bankPresenter;
 
-        private const int _delayOperation = 1000;
-        private const int _delayBetweenMatch = 5000;
+        private const int _timeOperation = 1000;
+        private const int _timeBetweenMatch = 5000;  
 
-        public MatchPresenter(MatchModel model, MatchView view, MatchService matchService, BankPresenter bankPreseter) 
-        {
+        public MatchPresenter(MatchModel model, MatchView view, MatchService matchService) : base()
+        {   
             _matchView = view;   
             _matchModel = model;
 			_matchService = matchService;
-			_bankPresenter = bankPreseter;
               
-			_matchModel.OnNewDistribution += NewMatch;
+			_matchModel.OnNewDistribution += NewDestribution;
 			_matchModel.OnNewDistributionAfterBet += Dealer.TableDealing;
             _matchModel.OnBetSettings += StartBidding;
             _matchModel.OnEndedMatch += EndMatch;
@@ -39,22 +37,22 @@ namespace PokerMatch
 
         public async void StartMatch()   
         {
-            _bankPresenter.ActivateBank();
             SetPlayerInPlaces();
-            _matchView.SetActiveCardDeck(true);
-            await Task.Delay(_delayOperation);
+            _matchView.ActivateView();
+            await Task.Delay(_timeOperation);
 
             if(PhotonNetwork.IsMasterClient)
                 _matchService.SetMatchPhasePun(Phase.NewDistribution);   
         }
 
-        private void NewMatch(CardData cardData)
+        private async void NewDestribution(CardData cardData)    
         {
             SetBlindsButtom();
-            if (PhotonNetwork.IsMasterClient)
-			    StartNewBidding();
-            Dealer.StartDealing(cardData, _matchModel.CurrentPlayers);
-        }
+            if (!PhotonNetwork.IsMasterClient)
+                return;
+            await Dealer.StartDealing(cardData, _matchModel.CurrentPlayers);
+            StartNewBidding();
+        }  
 
 		private void SetPlayerInPlaces()
         {
@@ -77,18 +75,13 @@ namespace PokerMatch
 
         private void EndDealing(List<CardModel> models)
         {
-            if(PhotonNetwork.IsMasterClient)
-            {
-                for (int i = 0; i < models.Count; i++)
-                    _matchService.AddTableCard(models[i]);
-            }
-            _matchModel.SetMatchPhase(Phase.BetSetting);
+            for (int i = 0; i < models.Count; i++)
+                _matchService.AddTableCard(models[i]);
+            _matchService.SetMatchPhasePun(Phase.BetSetting);
 		}
 
-        private void StartBidding()  
+        private void StartBidding()   
         {
-			_bankPresenter.ChangeRate(0);
-
 			int allIn = 0;
 			for (int i = 0; i < _matchModel.PlayersCount; i++)
 			{
@@ -105,7 +98,6 @@ namespace PokerMatch
 
 			if (allIn >= _matchModel.PlayersCount - 1)
 			{
-                Debug.Log($"all in count {allIn}");
 				if (_matchModel.DesiredCardCount > 5)
 				{
 					_matchService.SetMatchPhasePun(Phase.EndMatch);
@@ -118,7 +110,7 @@ namespace PokerMatch
 			_matchService.SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
 		}   
 
-        private void StartNewBidding() 
+        private void StartNewBidding()  
         {            
 			_matchService.SetPlayerStatePun(_matchModel.StartPlayer, PlayerModel.PlayerState.Move);
             _matchService.UpdatePlayerRatePun(_matchModel.StartPlayer, BankModel.SmallBlind);
@@ -140,18 +132,28 @@ namespace PokerMatch
 			if (!PhotonNetwork.IsMasterClient)
                 return;  
 
-			await Task.Delay(_delayOperation);
+			await Task.Delay(_timeOperation);
 
 			Player winner = _matchModel.PlayersCount == 1 ? _matchModel.CurrentPlayers[0] : _matchModel.GetWinner();
 
             _matchService.ChangePlayerColor(winner, new ColorModel(new Color(1, 0.5f, 0)));
             _matchService.GiveAwayTheWinnings(winner);  
 
-			await Task.Delay(_delayBetweenMatch); 
+			await Task.Delay(_timeBetweenMatch); 
 
 			_matchService.ChangePlayerColor(winner, new ColorModel(Color.white)); 
-			PhotonNetwork.DestroyAll();
+			PhotonNetwork.DestroyAll(); 
             _matchService.SetMatchPhasePun(Phase.NewDistribution);
 		}
-	}
+
+        public override void Dispose()  
+        {
+            _matchModel.OnNewDistribution -= NewDestribution;
+            _matchModel.OnNewDistributionAfterBet -= Dealer.TableDealing;
+            _matchModel.OnBetSettings -= StartBidding;
+            _matchModel.OnEndedMatch -= EndMatch;
+            _matchModel.OnEndedGame -= _matchView.OnEndMatch;
+            Dealer.OnDealingEnded -= EndDealing;
+        }
+    }
 }

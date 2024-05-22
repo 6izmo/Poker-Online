@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Bank
 {
-    public class BankView : MonoBehaviour
+    public class BankView : MonoBehaviour  
     {
         [SerializeField] private TextMeshProUGUI _bank;
 
-        public void ActivateBank(bool activate) => _bank.gameObject.SetActive(activate);
+        public void Activate() => _bank.Activate();
 
         public async void UpdateBank(int lastValue, int value)
         {

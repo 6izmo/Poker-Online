@@ -25,7 +25,7 @@ namespace RoomList
             RoomOptions roomOptions = new()
             {
                 MaxPlayers = 4,
-                IsVisible = true
+                IsVisible = true,   
             };
 
             PhotonNetwork.CreateRoom(name, roomOptions, TypedLobby.Default);

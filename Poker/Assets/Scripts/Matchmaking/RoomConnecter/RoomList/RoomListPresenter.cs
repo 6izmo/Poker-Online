@@ -18,7 +18,6 @@ namespace RoomList
             _listView.OnExit += Exit;
             _listView.OnRoomJoined += JoinByName;
             _listView.OnRoomRandomJoined += JoinRandom;
-
 		}
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -58,6 +57,14 @@ namespace RoomList
 
         private void JoinRandom() => PhotonNetwork.JoinRandomRoom();
 
-		private void Exit() => SceneTransition.SwitchToScene("Menu");
-	}
+        private void Exit() => SceneTransition.SwitchToScene("Menu");
+
+        private void OnDestroy()
+        {
+            _listView.OnRoomCreated -= _listModel.CreateRoom;
+            _listView.OnExit -= Exit;
+            _listView.OnRoomJoined -= JoinByName;
+            _listView.OnRoomRandomJoined -= JoinRandom;
+        }
+    }
 }

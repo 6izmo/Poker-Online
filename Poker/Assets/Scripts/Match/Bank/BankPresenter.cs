@@ -2,16 +2,17 @@ using Players;
 
 namespace Bank
 {
-    public class BankPresenter
+    public class BankPresenter : Presenter
     {
         private BankModel _bankModel;
         private BankView _bankView;
 
-        public BankPresenter(BankModel model, BankView view)
+        public BankPresenter(BankModel model, BankView view) : base()
         {
             _bankModel = model;
             _bankView = view;
 
+            _bankView.Activate();
             _bankModel.AmoutMoney.OnChanged += UpdateBank;
 		}
 
@@ -22,8 +23,6 @@ namespace Bank
         }
 
         private void UpdateBank(int money) => _bankView.UpdateBank(_bankModel.LastAmount, money);
-
-		public void ActivateBank() => _bankView.ActivateBank(true);
            
         public void ChangeRate(int rate) => _bankModel.ChangeRate(rate);
 
@@ -33,5 +32,7 @@ namespace Bank
             _bankModel.AmoutMoney.Value = 0;
             _bankModel.ChangeRate(0);
 		}
-	}
+
+        public override void Dispose() => _bankModel.AmoutMoney.OnChanged -= UpdateBank;
+    }
 }

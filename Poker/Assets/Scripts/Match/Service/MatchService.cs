@@ -15,19 +15,32 @@ public class MatchService : MonoBehaviourPunCallbacks
 
 	public void Init(MatchModel pokerMatchModel, BankPresenter bankPresenter)
 	{
-		_matchModel = pokerMatchModel;
+		_matchModel = pokerMatchModel; 
 		_bankPresenter = bankPresenter;
 	}
 
-	public void SetMatchPhasePun(Phase phase) => photonView.RPC("SetMatchPhase", RpcTarget.All, phase);
+    public override void OnPlayerLeftRoom(Player otherPlayer)  
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+		SetMatchPhasePun(Phase.NewDistribution);  
+    }
+
+    public void SetMatchPhasePun(Phase phase) => photonView.RPC("SetMatchPhase", RpcTarget.All, phase);
 
 	[PunRPC]
 	void SetMatchPhase(Phase phase)
 	{
-		if (phase == Phase.NewDistributionAfterBet && _matchModel.DesiredCardCount > 5)
-			_matchModel.SetMatchPhase(Phase.EndMatch);
-		else
-			_matchModel.SetMatchPhase(phase);
+		switch (phase) 
+		{
+			case Phase.BetSetting:
+                _bankPresenter.ChangeRate(0);
+                break;
+			case Phase.NewDistributionAfterBet:
+				if (_matchModel.DesiredCardCount > 5)
+					phase = Phase.EndMatch;
+                break;
+		}
+		_matchModel.SetMatchPhase(phase);
 	} 
 
     public void AddPlayerModel(PlayerModel playerModel) => photonView.RPC("AddPlayerModelPun", RpcTarget.All, PhotonNetwork.LocalPlayer, playerModel);

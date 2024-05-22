@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Bank
 {
@@ -25,9 +24,8 @@ namespace Bank
             BigBlind = bigBlind;
         }
 
-        public void ChangeRate(int rate)
+        public void ChangeRate(int rate) 
         {
-            Debug.Log($" change rate - {rate}");
             CurrentRate = rate;
             OnCurrentRateChanged?.Invoke(CurrentRate);
         }

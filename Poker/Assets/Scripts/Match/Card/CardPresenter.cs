@@ -81,6 +81,6 @@ namespace Cards
             await Task.CompletedTask;
         }
 
-        public void Disable() => PhotonNetwork.RemoveCallbackTarget(this);
+        public void OnDestroy() => PhotonNetwork.RemoveCallbackTarget(this);
     }
 }

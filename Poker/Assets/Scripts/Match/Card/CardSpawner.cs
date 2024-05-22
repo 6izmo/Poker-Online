@@ -4,24 +4,21 @@ using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using System;
 
 namespace Cards
 {
-    public class CardSpawner : IOnEventCallback
+    public class CardSpawner : IUsePhotonCallback
     {
         private MatchModel _pokerModel;
 
-        public CardSpawner(MatchModel pokerModel)
-        {
-            _pokerModel = pokerModel;
-            PhotonNetwork.AddCallbackTarget(this);
-        }
-
-        public async void OnEvent(EventData photonEvent)
+        public CardSpawner(MatchModel pokerModel) : base() => _pokerModel = pokerModel;
+  
+        public async override void OnEvent(EventData photonEvent)
         {
             if (photonEvent.Code != (int)EventCode.Dealing)
                 return;
-
+           
             object[] datas = (object[])photonEvent.CustomData;
             Player player = (Player)datas[1];
             string prefabName = (string)datas[3];
@@ -35,17 +32,16 @@ namespace Cards
                 return;
 
             object[] dataPos = new object[] { 1, _pokerModel.CardData.CardDeckPosition, playerId, rotation };
-            CardModel cardModel = (CardModel)datas[2];
+            CardModel cardModel = (CardModel)datas[2];  
             GameObject cardObject = PhotonNetwork.Instantiate(prefabName, localPositon, Quaternion.identity, 0, dataPos);
 
             CardPresenter cardPresenter = cardObject.GetComponent<CardPresenter>();
             cardPresenter.Init(cardModel);
+
             await cardPresenter.SetPosition(_pokerModel.CardData.CardDeckPosition, localPositon, 0);
-
+ 
             PlayerModel playerModel = _pokerModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
-            playerModel.AddCard(cardPresenter);
+            playerModel.AddCard(cardPresenter);          
         }
-
-        public void RemoveCallback() => PhotonNetwork.RemoveCallbackTarget(this);
     }
 }

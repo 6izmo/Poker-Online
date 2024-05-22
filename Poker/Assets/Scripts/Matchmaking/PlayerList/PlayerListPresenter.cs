@@ -36,9 +36,9 @@ namespace PlayerList
             photonView.RPC("CheckReadyConditions", RpcTarget.All);
         }
 
-		private void Leave() => PhotonNetwork.LeaveRoom();
+        private void Leave() => PhotonNetwork.LeaveRoom();
 
-		[PunRPC]
+        [PunRPC]
         public void CheckReadyConditions()
         {
             if (!_playerListModel.GetPlayersReadyCondition())
@@ -58,5 +58,7 @@ namespace PlayerList
         public override void OnPlayerEnteredRoom(Player newPlayer) => _playerListModel.AddPlayer(newPlayer);
 
         public override void OnPlayerLeftRoom(Player otherPlayer) => _playerListModel.RemovePLayer(otherPlayer);
-	}
+
+        private void OnDestroy() => _playerListView.OnLeaved -= Leave;
+    }
 }

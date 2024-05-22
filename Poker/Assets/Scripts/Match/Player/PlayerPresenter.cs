@@ -6,12 +6,12 @@ using ExitGames.Client.Photon;
 namespace Players
 {
     using Move = PlayerModel.PlayerMove;
-    public class PlayerPresenter
+    public class PlayerPresenter : Presenter
     {
         private PlayerView _playerView;
         private PlayerModel _playerModel;
 
-        public PlayerPresenter(PlayerModel model, PlayerView view)
+        public PlayerPresenter(PlayerModel model, PlayerView view) : base()
         {
             _playerModel = model;
             _playerView = view;
@@ -54,6 +54,21 @@ namespace Players
 			object[] content = new object[] { PhotonNetwork.LocalPlayer, move, _playerModel };
             RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
             PhotonNetwork.RaiseEvent((byte)EventCode.Move, content, eventOptions, SendOptions.SendUnreliable);
+        }
+
+        public override void Dispose()
+        {
+            BankModel.OnCurrentRateChanged -= SetRaise;
+            BankModel.OnCurrentRateChanged -= _playerView.UpdateCallButton;
+
+            _playerModel.RaiseSum.OnChanged -= _playerView.UpdateRaiseButton;
+            _playerModel.Money.OnChanged -= _playerView.UpdateMoneyText;
+            _playerModel.Folded.OnChanged -= _playerView.SetActiveCommandPanel;
+            _playerModel.OnGotCards -= _playerView.SetActiveCardButton;
+
+            _playerView.OnRaiseChanged -= SetRaiseValue;
+            _playerView.OnTurnedOver -= TurnOverCards;
+            _playerView.OnMoved -= OnMove;
         }
     }
 }

@@ -25,9 +25,9 @@ namespace RoomList
 
         public void Init()
         {
-            _leaveButton.onClick.AddListener(() => OnExit?.Invoke());
-            _sendButton.onClick.AddListener(() => OnSendButton());
-            _joinRandomButton.onClick.AddListener(() => OnRoomRandomJoined?.Invoke());
+            _leaveButton.Add(() => OnExit?.Invoke());
+            _sendButton.Add(() => OnSendButton());
+            _joinRandomButton.Add(() => OnRoomRandomJoined?.Invoke());
 		}
 
         private void OnSendButton()

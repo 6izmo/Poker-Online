@@ -10,14 +10,20 @@ namespace Combination
     {
         public Task<CombinationModel> GetCombination(PlayerModel playerModel, List<CardModel> tableCards)
         {
-            tableCards.Add(playerModel.Cards[0].CardModel);
-            tableCards.Add(playerModel.Cards[1].CardModel);
+            CardModel firstCard = playerModel.Cards[0].CardModel;
+            CardModel secondCard = playerModel.Cards[1].CardModel;
+            int firstWeight = firstCard.Rank == 0 ? 13 : firstCard.Rank; 
+            int secondWeight = secondCard.Rank == 0 ? 13 : secondCard.Rank;
+            int playerCardWeight = firstWeight + secondWeight;
+
+            tableCards.Add(firstCard);
+            tableCards.Add(secondCard);
             tableCards.Sort();
 
-            List<CombinationModel> combinations = new();
+            List <CombinationModel> combinations = new();
             int highCardIndex = tableCards.Any(x => x.Rank == 0) ? 0 : tableCards.Count - 1;
 
-            CombinationModel combination = new(CombinationType.HighCard, tableCards[highCardIndex].Rank);
+            CombinationModel combination = new(playerCardWeight, CombinationType.HighCard, tableCards[highCardIndex].Rank);
             combinations.Add(combination);
 
             CardModel lastCard = tableCards[0];
@@ -31,16 +37,16 @@ namespace Combination
                 countOneSuitForFlush = tableCards.Where(x => x.Suit == card.Suit).Count();
 
                 if (repeatCount == 2 && !combinations.Any(x => x.CombinataionRank == card.Rank && x.CombinationType == CombinationType.Pair))
-                    combinations.Add(new(CombinationType.Pair, card.Rank));
+                    combinations.Add(new(playerCardWeight,CombinationType.Pair, card.Rank));
 
                 if (repeatCount == 3 && !combinations.Any(x => x.CombinataionRank == card.Rank && x.CombinationType == CombinationType.ThreeOfAKind))
-                    combinations.Add(new(CombinationType.ThreeOfAKind, card.Rank));
+                    combinations.Add(new(playerCardWeight,CombinationType.ThreeOfAKind, card.Rank));
 
                 if (repeatCount == 4 && !combinations.Any(x => x.CombinataionRank == card.Rank && x.CombinationType == CombinationType.FourOfAKind))
-                    combinations.Add(new(CombinationType.FourOfAKind, card.Rank));
+                    combinations.Add(new(playerCardWeight,CombinationType.FourOfAKind, card.Rank));  
 
                 if (countOneSuitForFlush >= 5)
-                    combinations.Add(new(CombinationType.Flush, card.Rank));
+                    combinations.Add(new(playerCardWeight,CombinationType.Flush, card.Rank));
 
                 if (card.Rank - lastCard.Rank == 1 || card.Rank - tableCards[0].Rank == 12)
                 {
@@ -55,7 +61,7 @@ namespace Combination
                 if (countCardsForStraight >= 5)
                 {
                     CombinationType combinationType = countOneSuitForStraight >= 5 ? CombinationType.StraightFlush : CombinationType.Straight;
-                    combinations.Add(new(combinationType, lastCard.Rank));
+                    combinations.Add(new(playerCardWeight,combinationType, lastCard.Rank));
                 }
 
                 lastCard = card;
@@ -69,12 +75,12 @@ namespace Combination
                 if (repeatCount == 2)
                 {
                     CombinationModel secondPair = combinations.FindLast(x => x.CombinationType == combo.CombinationType);
-                    result = new CombinationModel(CombinationType.TwoPair, secondPair.CombinataionRank + combo.CombinataionRank);
+                    result = new CombinationModel(playerCardWeight,CombinationType.TwoPair, secondPair.CombinataionRank + combo.CombinataionRank);
                 }
                 if (combo.CombinationType == CombinationType.ThreeOfAKind && combinations.Any(x => x.CombinationType == CombinationType.Pair))
                 {
                     CombinationModel pair = combinations.FindLast(x => x.CombinationType == CombinationType.Pair);
-                    result = new CombinationModel(CombinationType.FullHouse, combo.CombinataionRank + pair.CombinataionRank);
+                    result = new CombinationModel(playerCardWeight,CombinationType.FullHouse, combo.CombinataionRank + pair.CombinataionRank);
                 }
             }
 

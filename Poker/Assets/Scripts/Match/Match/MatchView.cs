@@ -59,11 +59,11 @@ namespace PokerMatch
             await Task.CompletedTask;  
         }
 
-        public void SetActiveCardDeck(bool active)
+        public void ActivateView()
         {
-            _cardDeck.SetActive(active);
-            _smallBlinds.SetActive(active);
-            _bigBlinds.SetActive(active);
+            _cardDeck.Activate();
+            _smallBlinds.Activate();
+            _bigBlinds.Activate();
         }
 
         public void ShowPlayersInPlaces(PlayerInfoView playerItem, PlayerItemPosition playerItemPosition)

@@ -21,7 +21,7 @@ namespace Players
         [SerializeField] private TextMeshProUGUI _raiseText;
 
         [Header("Buttons")]
-        [SerializeField] private Button _checkCardsButton;
+        [SerializeField] private Button _checkButton;
         [SerializeField] private Button _allInButton;
         [SerializeField] private Button _plusButton;
         [SerializeField] private Button _raiseButton;
@@ -39,22 +39,20 @@ namespace Players
 
             _moneyText.Activate();
             _commandPanel.Activate();
-            _checkCardsButton.Deactivate();
+            _checkButton.Deactivate();
 
             _moneyText.text = $"{_playerModel.Money}$";
 
-            _checkCardsButton.onClick.AddListener(delegate { OnTurnedOver?.Invoke(); });
-
-            _callButton.onClick.AddListener(()  => OnMoved?.Invoke(Move.Call));
-            _raiseButton.onClick.AddListener(() => OnMoved?.Invoke(Move.Raise) );
-            _allInButton.onClick.AddListener(() => OnMoved?.Invoke(Move.AllIn));
-            _foldButton.onClick.AddListener(()  => OnMoved?.Invoke(Move.Fold));
-
-            _plusButton.onClick.AddListener(()  => OnRaiseChanged(_playerModel.RaiseSum.Value + BankModel.BigBlind));
-            _minusButton.onClick.AddListener(() => OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind));
+            _checkButton.Add(() => OnTurnedOver?.Invoke());
+            _callButton.Add(()  => OnMoved?.Invoke(Move.Call));
+            _raiseButton.Add(() => OnMoved?.Invoke(Move.Raise) );
+            _allInButton.Add(() => OnMoved?.Invoke(Move.AllIn));
+            _foldButton.Add(()  => OnMoved?.Invoke(Move.Fold));
+            _plusButton.Add(()  => OnRaiseChanged(_playerModel.RaiseSum.Value + BankModel.BigBlind)); 
+            _minusButton.Add(() => OnRaiseChanged(_playerModel.RaiseSum.Value - BankModel.BigBlind));
         }
 
-        public void SetActiveCardButton(bool active) => _checkCardsButton.gameObject.SetActive(active);
+        public void SetActiveCardButton(bool active) => _checkButton.gameObject.SetActive(active);
 
         public void SetActiveCommandPanel(bool folded) => _commandPanel.gameObject.SetActive(!folded);
 

@@ -7,9 +7,9 @@ using Combination;
 using System.Linq;
 using UnityEngine;
 using Photon.Realtime;
-using System.Collections.Generic;
+using System.Collections.Generic;  
 
-namespace PokerMatch
+namespace PokerMatch  
 {
     public class MatchModel
     {
@@ -45,7 +45,7 @@ namespace PokerMatch
 
         public CardData CardData { get; private set; }
 
-        public PokerPlayerData PokerPlayerData { get; private set; }
+        public PokerPlayerData PokerPlayerData { get; private set; }  
 
         public int DesiredCardCount { get; private set; } = 3;
 
@@ -102,10 +102,10 @@ namespace PokerMatch
             if (!_currentPlayers.Contains(player))
                 return;
             PhotonNetwork.DestroyPlayerObjects(player);
-            _currentPlayers.Remove(player);
+            _currentPlayers.Remove(player); 
         }
 
-        public Player GetWinner()
+        public Player GetWinner() 
         {
             foreach (var item in _playerCombination)
                 Debug.Log($"Combination:{item.Key}; Player:{item.Value.NickName}");
@@ -113,7 +113,7 @@ namespace PokerMatch
             List<CombinationModel> combinations = _playerCombination.Keys.ToList();
             combinations.Sort();
             CombinationModel highCombination = combinations.Last();
-            Debug.Log($"High combination:{highCombination};");     
+            Debug.Log($"High combination:{highCombination};");      
             return _playerCombination.GetValueOrDefault(highCombination);
 		}
 
@@ -124,7 +124,8 @@ namespace PokerMatch
             switch (phase)
             {
                 case MatchPhase.NewDistribution:
-                    SetNewData();
+                    ClearData();
+                    SetStartData();
                     break;
                 case MatchPhase.BetSetting:
                     OnBetSettings?.Invoke();
@@ -141,7 +142,7 @@ namespace PokerMatch
 
         public void SetStartPlayer()
         {
-            PlayerModel playerModel = GetPlayerModel(StartPlayer);
+            PlayerModel playerModel = _playerModels[StartPlayer];
             if (playerModel.Money.Value == 0 || playerModel.Folded.Value)
             {
                 for (int i = StartPlayer.ActorNumber; i <= PhotonNetwork.PlayerList.Length; i++)
@@ -163,21 +164,29 @@ namespace PokerMatch
             CurrentBetPlayer = StartPlayer;
         }
 
-        private void SetNewData()
+        private void ClearData()
         {
 			DesiredCardCount = 3;
 			_tableCards.Clear();
 			_playerCombination.Clear();
-			bool response = ClearPlayers();
-            if (!response)
+			ClearPlayers();
+        }
+
+        private void SetStartData()
+        {
+            if (PlayersCount == 1)
             {
                 Player winner = _currentPlayers[0];
-                OnEndedGame?.Invoke(winner.NickName);
                 _playerModels[winner].Folded.Value = false;
+                OnEndedGame?.Invoke(winner.NickName);
                 return;
             }
+            SetPlayerBlind();
+        }
 
-            SmallBlindId = SmallBlindId + 1 >= PlayersCount ? 0: SmallBlindId + 1;
+        private void SetPlayerBlind()
+        {
+            SmallBlindId = SmallBlindId + 1 >= PlayersCount ? 0 : SmallBlindId + 1;
             _startPlayerIndex = SmallBlindId;
             StartPlayer = _currentPlayers[_startPlayerIndex];
             BigBlindPlayer = _startPlayerIndex == PlayersCount - 1 ? _currentPlayers[0] : _currentPlayers[_startPlayerIndex + 1];
@@ -185,7 +194,7 @@ namespace PokerMatch
             OnNewDistribution?.Invoke(CardData);
         }
 
-        private bool ClearPlayers()
+        private void ClearPlayers()
         {
             _currentPlayers = PhotonNetwork.PlayerList.ToList();
             for (int i = 0; i < PlayersCount; i++)
@@ -199,9 +208,7 @@ namespace PokerMatch
                 }
                 else
                     model.ResetModel();
-            }
-            bool response = PlayersCount == 1 ? false : true;
-            return response;
+            }      
         }
     }
 }

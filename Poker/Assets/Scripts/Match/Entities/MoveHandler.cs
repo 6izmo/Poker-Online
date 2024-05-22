@@ -7,20 +7,18 @@ using ExitGames.Client.Photon;
 using Move = Players.PlayerModel.PlayerMove;
 using State = Players.PlayerModel.PlayerState;
 
-public class MoveHandler : IOnEventCallback
+public class MoveHandler : IUsePhotonCallback
 {
     private MatchService _matchService;
     private MatchModel _matchModel;
 
-	public MoveHandler(MatchService matchService, MatchModel model)
+	public MoveHandler(MatchService matchService, MatchModel model) : base()
     {
         _matchService = matchService;
         _matchModel = model;
-
-		PhotonNetwork.AddCallbackTarget(this);
     }
 
-    public void OnEvent(EventData photonEvent)
+    public override void OnEvent(EventData photonEvent)
     {
         if (photonEvent.Code != (int)EventCode.Move || !PhotonNetwork.IsMasterClient)   
             return;
@@ -87,6 +85,4 @@ public class MoveHandler : IOnEventCallback
 
 		_matchService.SetPlayerStatePun(nextPlayer, State.Move);
     }
-
-    public void RemoveCallback() => PhotonNetwork.RemoveCallbackTarget(this);   
 }

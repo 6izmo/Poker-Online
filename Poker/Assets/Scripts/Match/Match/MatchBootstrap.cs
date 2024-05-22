@@ -18,7 +18,7 @@ namespace PokerMatch
         [Space]
         [SerializeField] private CardData _cardData;
         [Space]
-        [SerializeField] private PokerSettings _pokerConfig;
+        [SerializeField] private PokerSettings _pokerConfig;  
 
         [Header("PlayerList")]
         [SerializeField] private PlayerListPresenter _playerListPresenter;
@@ -33,8 +33,6 @@ namespace PokerMatch
         [Space]
         [SerializeField] private MatchView _pokerMatchView;
 
-        private MoveHandler _moveHandler;
-        private CardSpawner _cardSpawner;
         private PlayerModel _playerModel;
 
         private void Awake()
@@ -52,22 +50,23 @@ namespace PokerMatch
 			PlayerInitialize();
 
 			BankModel bankModel = new(_pokerConfig.SmallBlind, _pokerConfig.BigBlind);
-			BankPresenter bankPresenter = new(bankModel, _bankView);  
+            BankPresenter bankPresenter = new(bankModel, _bankView); 
 
             MatchModel holdem = new(_playerData, _cardData, playersInfo);
-			_cardSpawner = new(holdem);
+			new CardSpawner(holdem);
 
 			_matchService.Init(holdem, bankPresenter);
 			_matchService.AddPlayerModel(_playerModel);
-			_moveHandler = new(_matchService, holdem);
+		    new MoveHandler(_matchService, holdem);
 
-			new MatchPresenter(holdem, _pokerMatchView, _matchService, bankPresenter).StartMatch();
+            MatchPresenter matchPresenter = new (holdem, _pokerMatchView, _matchService);
+            matchPresenter.StartMatch();
 		}
 
         private void PlayerInitialize()
         {
 			_playerModel = new(_pokerConfig.StartPlayerMoney);
-			new PlayerPresenter(_playerModel, _playerView);
+            new PlayerPresenter(_playerModel, _playerView);
 			_playerView.Init(_playerModel);
 		}
 
@@ -81,15 +80,11 @@ namespace PokerMatch
         private void RegisterType()
         {
 			PhotonPeer.RegisterType(typeof(CardModel), 4, CardModel.Serialize, CardModel.Deserialize);
-			PhotonPeer.RegisterType(typeof(PlayerModel), 5, PlayerModel.Serialize, PlayerModel.Deserialize);
+			PhotonPeer.RegisterType(typeof(PlayerModel), 5, PlayerModel.Serialize, PlayerModel.Deserialize); 
 			PhotonPeer.RegisterType(typeof(CombinationModel), 6, CombinationModel.Serialize, CombinationModel.Deserialize);
 			PhotonPeer.RegisterType(typeof(ColorModel), 7, ColorModel.Serialize, ColorModel.Deserialize);
 		}
 
-		private void OnDestroy()
-		{
-			_moveHandler?.RemoveCallback();
-			_cardSpawner?.RemoveCallback();
-		}
+		private void OnDestroy() => EventUnsubscriber.Execute();
     }
 }
