@@ -1,11 +1,8 @@
 using Bank;
 using Cards;
-using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using UnityEngine;
 
 namespace Players
 {
@@ -40,6 +37,8 @@ namespace Players
 
         public int LastAmountMoney { get; set; }
 
+        public int AllBetsInRound { get; private set; }
+
         public PlayerState CurrentState { get; set; }
 
         public bool AllIn { get; private set; }
@@ -49,9 +48,10 @@ namespace Players
         public PlayerModel(int startMoney)   
         {
             Rate = new();
-			Folded = new(false);
-			Money = new(startMoney);
-            LastAmountMoney = Money.Value;   
+            AllBetsInRound = 0;
+            Folded = new(false);
+            Money = new(startMoney);
+            LastAmountMoney = Money.Value;  
             CurrentState = PlayerState.Waiting;   
             RaiseSum = new(BankModel.BigBlind);
         }
@@ -70,17 +70,18 @@ namespace Players
         {
             Money.Value -= value;
             Rate.Value += value;
+            AllBetsInRound += value;
             if (Money.Value == 0)
                 AllIn = true;
         }
 
-        public void ResetModel()
+        public void ResetModel()  
 		{
 			Rate.Value = 0;
 			Folded.Value = false;
-            AllIn = false;  
-
-			_cardsInfo.Clear();
+            AllIn = false;
+            AllBetsInRound = 0;
+            _cardsInfo.Clear();
 			OnGotCards?.Invoke(false);  
 		}
 
@@ -88,7 +89,7 @@ namespace Players
         {
             PlayerModel myType = (PlayerModel)customType;
             int folded = myType.Folded.Value ? 1 : 0;
-            int[] data = new int[] { myType.Money.Value, myType.Rate.Value, myType.RaiseSum.Value, folded };
+            int[] data = new int[] { myType.Money.Value, myType.Rate.Value, myType.RaiseSum.Value, folded, myType.AllBetsInRound };
             Span<byte> bytes = MemoryMarshal.Cast<int, byte>(data);
             return bytes.ToArray();
         }
@@ -100,6 +101,7 @@ namespace Players
             model.Rate = new(ints[1]);
             model.RaiseSum = new(ints[2]);
             model.Folded = ints[3] == 1 ? new(true) : new(false);
+            model.AllBetsInRound = ints[4];
             return model;
         }
     }

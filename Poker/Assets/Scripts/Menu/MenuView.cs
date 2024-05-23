@@ -1,8 +1,8 @@
 using TMPro;
 using System;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
 
 namespace Menu
 {
@@ -30,10 +30,10 @@ namespace Menu
             
         private void Start()
         {
-            _playButton.onClick.AddListener(() => { OnPlayButtonClicked?.Invoke(); _title.Deactivate(); });
-            _okButton.onClick.AddListener(() => OnInputedName?.Invoke(_inputField.text));
-            _repeatButton.onClick.AddListener(() => { SwitchToConnectionPanel(false); _repeatButton.Deactivate(); });
-            _exitButton.onClick.AddListener(() => Application.Quit());
+            _playButton.Add(() => { OnPlayButtonClicked?.Invoke(); _title.Deactivate(); });
+            _okButton.Add(() => OnInputedName?.Invoke(_inputField.text));
+            _repeatButton.Add(() => { SwitchToConnectionPanel(false); _repeatButton.Deactivate(); });
+            _exitButton.Add(() => Application.Quit());
 
 			if (PhotonNetwork.IsConnected)  
                 ActivateMainMenu();

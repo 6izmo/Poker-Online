@@ -1,4 +1,3 @@
-using System;
 using Photon.Realtime;
 using System.Collections.Generic;
 

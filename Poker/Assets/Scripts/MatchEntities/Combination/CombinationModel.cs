@@ -26,7 +26,7 @@ namespace Combination
 				if (thisRank == otherRank)
 					result = CardWeight > other.CardWeight ? 1: -1;
 			}
-			return result;
+			return result;   
 		}
 
 		public static object Deserialize(byte[] data) => new CombinationModel(data[0], (CombinationType)(int)data[1], data[2]);

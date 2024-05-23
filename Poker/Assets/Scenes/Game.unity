@@ -4383,6 +4383,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3187636064089910006, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7073294525875741299, guid: 7cc9f01bed5126149af086a7ba8728fe, type: 3}
       propertyPath: m_Name
       value: SceneTransitoin
@@ -7329,7 +7333,7 @@ GameObject:
   - component: {fileID: 2087207524}
   - component: {fileID: 2087207523}
   - component: {fileID: 2087207526}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: CongratulationsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,7 +1,7 @@
 using Bank;
 using Cards;
 using Players;
-using PokerMatch;
+using PokerMatch;   
 using Photon.Pun;
 using Combination;
 using UnityEngine;
@@ -16,14 +16,8 @@ public class MatchService : MonoBehaviourPunCallbacks
 	public void Init(MatchModel pokerMatchModel, BankPresenter bankPresenter)
 	{
 		_matchModel = pokerMatchModel; 
-		_bankPresenter = bankPresenter;
+		_bankPresenter = bankPresenter;   
 	}
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)  
-    {
-        base.OnPlayerLeftRoom(otherPlayer);
-		SetMatchPhasePun(Phase.NewDistribution);  
-    }
 
     public void SetMatchPhasePun(Phase phase) => photonView.RPC("SetMatchPhase", RpcTarget.All, phase);
 
@@ -114,12 +108,32 @@ public class MatchService : MonoBehaviourPunCallbacks
 		view.ChangeColorText(colorModel.Color);
 	}
 
-	public void GiveAwayTheWinnings(Player player) => photonView.RPC("GiveAwayTheWinningsPun", RpcTarget.All, player);  
+	private void DivideMoney() => photonView.RPC("DivideMoneyPun", RpcTarget.All);
+
+    [PunRPC]
+	void DivideMoneyPun()
+	{
+        PlayerModel player = _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
+        _bankPresenter.ReturnBet(player);
+	}
+
+    public void TransferMoneyToPlayer(Player player) => photonView.RPC("TransferMoneyToPlayerPun", RpcTarget.All, player);  
 
 	[PunRPC]
-	void GiveAwayTheWinningsPun(Player player)
+	void TransferMoneyToPlayerPun(Player player)
 	{
 		PlayerModel winnerModel = _matchModel.GetPlayerModel(player);
-		_bankPresenter.GiveAwayTheWinnings(winnerModel);
+		_bankPresenter.TransferMoneyToPlayer(winnerModel);
 	}
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        if (PhotonNetwork.IsMasterClient && _matchModel != null && !_matchModel.GetPlayerModel(otherPlayer).Folded.Value)
+        {
+            DivideMoney();
+            PhotonNetwork.DestroyAll();
+            SetMatchPhasePun(Phase.NewDistribution); 
+        }
+    }
 }

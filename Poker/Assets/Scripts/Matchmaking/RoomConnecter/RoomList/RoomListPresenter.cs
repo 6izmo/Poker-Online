@@ -9,7 +9,7 @@ namespace RoomList
         private RoomListModel _listModel;
         private RoomListView _listView;
 
-        public void Init(RoomListModel listModel, RoomListView listView)
+        public void Init(RoomListModel listModel, RoomListView listView)  
         {
             _listModel = listModel;
             _listView = listView;
@@ -18,40 +18,42 @@ namespace RoomList
             _listView.OnExit += Exit;
             _listView.OnRoomJoined += JoinByName;
             _listView.OnRoomRandomJoined += JoinRandom;
-		}
 
-        public override void OnRoomListUpdate(List<RoomInfo> roomList)
+            PhotonConnecter.Instance.OnRoomListUpdated += UpdateRooms;
+            UpdateRooms(PhotonConnecter.Instance.RoomList);
+        }
+
+        private void UpdateRooms(List<RoomInfo> roomList)  
         {
             foreach (RoomInfo roomInfo in roomList)
             {
                 if (roomInfo.RemovedFromList)
                 {
-                    int index = _listModel.RoomItems.FindIndex(x => x.RoomInfo.Name == roomInfo.Name);
-                    if (index != -1)
-                    {
-                        RoomItem item = _listModel.RoomItems[index]; 
-                        Destroy(item.gameObject);
-                        _listModel.RemoveRoomItem(item);
-                    }
+                    RoomItem item = _listModel.GetRoomItem(roomInfo);
+                    Destroy(item.gameObject);
+                    _listModel.RemoveRoomItem(roomInfo);
                 }
                 else
                 {
-                    for (int i = 0; i < _listModel.RoomItems.Count; i++)
+                    if (_listModel.IsRoomCreated(roomInfo.Name))
                     {
-                        if (_listModel.RoomsInfo[i].masterClientId == roomInfo.masterClientId)
-                            return;
+                        RoomItem room = _listModel.GetRoomItem(roomInfo);
+                        room.SetRoomInfo(roomInfo);
+                        return;
                     }
-
-                    RoomItem roomItem = _listView.ShowRoom(_listModel.RoomPrefab);
-                    if (roomItem != null)
-                        _listModel.AddRoom(roomInfo, roomItem);
+                    else
+                    {
+                        RoomItem roomItem = _listView.ShowRoom(_listModel.RoomPrefab);
+                        if (roomItem != null)
+                            _listModel.AddRoom(roomInfo, roomItem);
+                    }
                 }
             }
         }
 
         private void JoinByName(string name)
         {
-            if(_listModel.RoomCreated(name))  
+            if(_listModel.IsRoomCreated(name))  
                 PhotonNetwork.JoinRoom(name);
         }
 
@@ -63,8 +65,9 @@ namespace RoomList
         {
             _listView.OnRoomCreated -= _listModel.CreateRoom;
             _listView.OnExit -= Exit;
-            _listView.OnRoomJoined -= JoinByName;
+            _listView.OnRoomJoined -= JoinByName; 
             _listView.OnRoomRandomJoined -= JoinRandom;
+            PhotonConnecter.Instance.OnRoomListUpdated -= UpdateRooms;
         }
     }
 }

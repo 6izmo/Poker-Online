@@ -122,7 +122,7 @@ namespace PokerMatch
 			PlayerModel localModel = _matchModel.GetPlayerModel(PhotonNetwork.LocalPlayer);
 			if (!localModel.Folded.Value)
 			{
-				CombinationModel combination = await new CombinationReader().GetCombination(localModel, _matchModel.TableCards);
+				CombinationModel combination = await CombinationReader.GetCombination(localModel, _matchModel.TableCards);
 				_matchService.AddPlayerCombination(PhotonNetwork.LocalPlayer, combination);
 
 				for (int i = 0; i < localModel.Cards.Count; i++)
@@ -137,7 +137,7 @@ namespace PokerMatch
 			Player winner = _matchModel.PlayersCount == 1 ? _matchModel.CurrentPlayers[0] : _matchModel.GetWinner();
 
             _matchService.ChangePlayerColor(winner, new ColorModel(new Color(1, 0.5f, 0)));
-            _matchService.GiveAwayTheWinnings(winner);  
+            _matchService.TransferMoneyToPlayer(winner);  
 
 			await Task.Delay(_timeBetweenMatch); 
 

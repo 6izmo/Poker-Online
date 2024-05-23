@@ -17,6 +17,7 @@ namespace Cards
                     _cards.Add(cardModel);
                 }
             }
+            _cards.Shuffle();  
         }
 
         public CardModel GetRandomCard()

@@ -1,17 +1,13 @@
 using Photon.Pun;
+using System.Linq;
 using Photon.Realtime;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RoomList
 {
     public class RoomListModel
     {
-        private List<RoomItem> _roomItems = new();
-        private List<RoomInfo> _allRoomsInfo = new();
-
-        public List<RoomItem> RoomItems => _roomItems;
-        public List<RoomInfo> RoomsInfo => _allRoomsInfo;
+        private Dictionary<RoomInfo, RoomItem> _rooms = new();
 
         public RoomItem RoomPrefab { get; private set; }
 
@@ -31,19 +27,20 @@ namespace RoomList
             PhotonNetwork.CreateRoom(name, roomOptions, TypedLobby.Default);
         }
 
-        public bool RoomCreated(string room) => _roomItems.Any(x => x.RoomInfo.Name == room);
+        public RoomItem GetRoomItem(RoomInfo info) => _rooms.GetValueOrDefault(info);
+
+        public bool IsRoomCreated(string room) => _rooms.Keys.Any(x => x.Name == room);
 
         public void AddRoom(RoomInfo roomInfo, RoomItem roomItem)
         {
             roomItem.SetRoomInfo(roomInfo);
-            _allRoomsInfo.Add(roomInfo);
-            _roomItems.Add(roomItem);
+            _rooms.Add(roomInfo, roomItem);
         }
 
-        public void RemoveRoomItem(RoomItem item)
+        public void RemoveRoomItem(RoomInfo info)
         {
-            if(_roomItems.Contains(item))
-                _roomItems.Remove(item); 
+            if(_rooms.ContainsKey(info))
+                _rooms.Remove(info); 
         }
     }
 }

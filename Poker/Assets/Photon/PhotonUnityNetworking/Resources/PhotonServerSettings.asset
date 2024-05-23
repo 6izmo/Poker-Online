@@ -92,6 +92,8 @@ MonoBehaviour:
   - ResetRatePun
   - ResetBankPun
   - SetBlindPun
+  - TransferMoneyToPlayerPun
+  - DivideMoneyPun
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

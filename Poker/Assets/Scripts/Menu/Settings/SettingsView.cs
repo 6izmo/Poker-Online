@@ -31,64 +31,76 @@ namespace Settings
 		public event Action<float> OnEffectsChanged; 
 		public event Action<float, float> OnClosed;
 
+		private AudioTrack _music;
+		private AudioTrack _effects;
+
 		public void Init(SettingsModel settings)
 		{
-			_close.onClick.AddListener(() => OnClosed?.Invoke(_musicProgressbar.fillAmount, _effectsProgressbar.fillAmount));
-
-			_plusMusic.onClick.AddListener(() => SetMusicProgress(_musicProgressbar.fillAmount + _progressStep));
-			_minusMusic.onClick.AddListener(() => SetMusicProgress(_musicProgressbar.fillAmount - _progressStep));
-			_plusEffects.onClick.AddListener(() => SetEffectsProgress(_effectsProgressbar.fillAmount + _progressStep));
-			_minusEffects.onClick.AddListener(() => SetEffectsProgress(_effectsProgressbar.fillAmount - _progressStep));
+			_close.Add(() => OnClosed?.Invoke(_musicProgressbar.fillAmount, _effectsProgressbar.fillAmount));
+			_plusMusic.Add(() => SetMusicProgress(_musicProgressbar.fillAmount + _progressStep));
+			_minusMusic.Add(() => SetMusicProgress(_musicProgressbar.fillAmount - _progressStep));
+			_plusEffects.Add(() => SetEffectsProgress(_effectsProgressbar.fillAmount + _progressStep));
+			_minusEffects.Add(() => SetEffectsProgress(_effectsProgressbar.fillAmount - _progressStep));
 
 			float musicValue = settings == null ? 1f : settings.Music;
 			float effectsValue = settings == null ? 1f : settings.Effects;
 
-			SetMusicProgress(musicValue);
+			_music = new(_musicProgressbar, _musicIcon, _musicOff, _musicOn);
+            _effects = new(_effectsProgressbar, _effectsIcon, _effectsOff, _effectsOn);
+
+            SetMusicProgress(musicValue);
 			SetEffectsProgress(effectsValue);
 		}
 
 		public void SetMusicProgress(float value)
 		{
-			_musicProgressbar.fillAmount = value;
-			switch (_musicProgressbar.fillAmount)
-			{
-				case < .2f:
-					_musicIcon.sprite = _musicOff;
-					break;
-				case < .4f:
-					_musicIcon.sprite = _musicOn;
-					_musicProgressbar.color = Color.red;
-					break;
-				case < .8f:
-					_musicProgressbar.color = Color.yellow;
-					break;
-				case < 1f:
-					_musicProgressbar.color = Color.green;
-					break;
-			}
-			OnMusicChanged?.Invoke(_musicProgressbar.fillAmount);
+			_music.SetProgress(value);
+			OnMusicChanged?.Invoke(_music.FillAmount);
 		}
 
 		public void SetEffectsProgress(float value)
 		{
-			_effectsProgressbar.fillAmount = value;
-			switch (_effectsProgressbar.fillAmount)
-			{
-				case < .2f:
-					_effectsIcon.sprite = _effectsOff;
-					break;
-				case < .4f:
-					_effectsIcon.sprite = _effectsOn;
-					_effectsProgressbar.color = Color.red;
-					break;
-				case < .8f:
-					_effectsProgressbar.color = Color.yellow;
-					break;
-				case < 1f:
-					_effectsProgressbar.color = Color.green;
-					break;
-			}
-			OnEffectsChanged?.Invoke(_effectsProgressbar.fillAmount);
-		}
+			_effects.SetProgress(value);
+			OnEffectsChanged?.Invoke(_effects.FillAmount);
+		}  
 	}
+
+    public class AudioTrack
+    {
+		private Image _progressBar;
+		private Image _icon;
+		private Sprite _on;
+		private Sprite _off;
+
+		public float FillAmount => _progressBar.fillAmount;
+
+        public AudioTrack(Image progressBar, Image icon, Sprite off, Sprite on)
+        {
+			_progressBar = progressBar;
+			_icon = icon;
+			_on = on;
+			_off = off;
+        }
+
+		public void SetProgress(float value)
+		{
+            _progressBar.fillAmount = value;
+            switch (_progressBar.fillAmount)
+            {
+                case < .2f:
+                    _icon.sprite = _off;
+                    break;
+                case < .4f:
+                    _icon.sprite = _on;
+                    _progressBar.color = Color.red;
+                    break;
+                case < .8f:
+                    _progressBar.color = Color.yellow;
+                    break;
+                case < 1f:
+                    _progressBar.color = Color.green;
+                    break;
+            }
+        }
+    }
 }

@@ -1060,8 +1060,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 225005027}
-  - {fileID: 686406922122483216}
   - {fileID: 660640330}
+  - {fileID: 686406922122483216}
   - {fileID: 485242114}
   - {fileID: 1571794948}
   - {fileID: 1804934619}
@@ -1525,7 +1525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

@@ -3,19 +3,22 @@ using Utilities;
 using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
+using System.Collections.Generic;
 
 public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter> 
 {
     [SerializeField] private RegionToken _regionToken;
-    [Space]
-    [SerializeField] private string _gameVersion = "0.0.1";
+
+    private List<RoomInfo> _roomInfo = new();
+    public List<RoomInfo> RoomList => _roomInfo;
+
+    public event Action<List<RoomInfo>> OnRoomListUpdated;
 
     public bool TryPlayerConnect(string nickname)
     {
         try
         {
 			PhotonNetwork.NickName = nickname;
-			PhotonNetwork.GameVersion = _gameVersion;  
 			PhotonNetwork.AutomaticallySyncScene = true; 
 			PhotonNetwork.ConnectUsingSettings();
 			PhotonNetwork.ConnectToRegion($"{_regionToken}");
@@ -26,6 +29,12 @@ public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter>
             return false;
         }
         return true;
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        _roomInfo = roomList;
+        OnRoomListUpdated?.Invoke(_roomInfo);
     }
 
     public override void OnConnectedToMaster()

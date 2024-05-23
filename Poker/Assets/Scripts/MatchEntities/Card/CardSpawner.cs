@@ -4,7 +4,6 @@ using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
-using System;
 
 namespace Cards
 {

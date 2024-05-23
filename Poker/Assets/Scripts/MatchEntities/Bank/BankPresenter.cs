@@ -23,14 +23,19 @@ namespace Bank
         }
 
         private void UpdateBank(int money) => _bankView.UpdateBank(_bankModel.LastAmount, money);
-           
+
         public void ChangeRate(int rate) => _bankModel.ChangeRate(rate);
 
-        public void GiveAwayTheWinnings(PlayerModel playerModel)
+        public void ReturnBet(PlayerModel player)
+        {
+            player.Money.Value += player.AllBetsInRound;
+            _bankModel.ClearBank(); 
+        }
+
+        public void TransferMoneyToPlayer(PlayerModel playerModel)
         {
             playerModel.Money.Value += _bankModel.AmoutMoney.Value;
-            _bankModel.AmoutMoney.Value = 0;
-            _bankModel.ChangeRate(0);
+            _bankModel.ClearBank();
 		}
 
         public override void Dispose() => _bankModel.AmoutMoney.OnChanged -= UpdateBank;

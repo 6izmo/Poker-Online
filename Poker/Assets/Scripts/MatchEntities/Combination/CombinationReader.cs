@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Combination
 {
-    public class CombinationReader
+    public static class CombinationReader
     {
-        public Task<CombinationModel> GetCombination(PlayerModel playerModel, List<CardModel> tableCards)
+        public static Task<CombinationModel> GetCombination(PlayerModel playerModel, List<CardModel> tableCards)
         {
             CardModel firstCard = playerModel.Cards[0].CardModel;
             CardModel secondCard = playerModel.Cards[1].CardModel;
@@ -61,7 +61,10 @@ namespace Combination
                 if (countCardsForStraight >= 5)
                 {
                     CombinationType combinationType = countOneSuitForStraight >= 5 ? CombinationType.StraightFlush : CombinationType.Straight;
-                    combinations.Add(new(playerCardWeight,combinationType, lastCard.Rank));
+                    if(combinationType == CombinationType.StraightFlush && lastCard.Rank == 0)
+                        combinations.Add(new(playerCardWeight, CombinationType.RoaylFlush, lastCard.Rank));
+                    else
+                        combinations.Add(new(playerCardWeight, combinationType, lastCard.Rank));
                 }
 
                 lastCard = card;
@@ -72,7 +75,7 @@ namespace Combination
             foreach (CombinationModel combo in combinations)
             {
                 int repeatCount = combinations.Where(x => x.CombinationType == combo.CombinationType).Count();
-                if (repeatCount == 2)
+                if (repeatCount >= 2)   
                 {
                     CombinationModel secondPair = combinations.FindLast(x => x.CombinationType == combo.CombinationType);
                     result = new CombinationModel(playerCardWeight,CombinationType.TwoPair, secondPair.CombinataionRank + combo.CombinataionRank);

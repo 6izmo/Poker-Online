@@ -29,5 +29,11 @@ namespace Bank
             CurrentRate = rate;
             OnCurrentRateChanged?.Invoke(CurrentRate);
         }
+
+        public void ClearBank()
+        {
+            AmoutMoney.Value = 0;
+            ChangeRate(0);
+        }
     }
 }
