@@ -1,14 +1,14 @@
 using Cards;
 using Players;
 using System.Linq;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Combination
 {
     public static class CombinationReader
     {
-        public static Task<CombinationModel> GetCombination(PlayerModel playerModel, List<CardModel> tableCards)
+        public static UniTask<CombinationModel> GetCombination(PlayerModel playerModel, List<CardModel> tableCards)
         {
             CardModel firstCard = playerModel.Cards[0].CardModel;
             CardModel secondCard = playerModel.Cards[1].CardModel;
@@ -87,7 +87,7 @@ namespace Combination
                 }
             }
 
-            return Task.FromResult(result);
+            return UniTask.FromResult(result);
         }
     }
 }

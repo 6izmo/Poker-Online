@@ -1,6 +1,6 @@
 using TMPro;
 using UnityEngine;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Bank
 {
@@ -20,7 +20,7 @@ namespace Bank
                 currentValue = (int)Mathf.Lerp(lastValue, value, elapsedTime / animationTime);
                 elapsedTime += Time.deltaTime;
                 _bank.text = $"BANK:{currentValue}$";
-                await Task.Yield();
+                await UniTask.Yield();
             }
             _bank.text = $"BANK:{value}$";
         }

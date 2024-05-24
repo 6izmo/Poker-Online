@@ -1,7 +1,7 @@
 using System;
 using Photon.Pun;
 using UnityEngine;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Cards
 {
@@ -21,7 +21,7 @@ namespace Cards
             _backSprite = _spriteRenderer.sprite;
         }
 
-        public async Task RotateCard(bool isOpened, bool showCard = false)
+        public async UniTask RotateCard(bool isOpened, bool showCard = false)
         {
             if (_isTurning)
                 return;
@@ -50,17 +50,17 @@ namespace Cards
             _isTurning = false;
         }
 
-        private async Task Rotate(float rotateTime, Vector3 startRotation, Vector3 neededRotation)    
+        private async UniTask Rotate(float rotateTime, Vector3 startRotation, Vector3 neededRotation)    
         {
             float elapsedTime = 0f;
             while (elapsedTime < rotateTime)
             {
                 transform.localEulerAngles = Vector3.Lerp(startRotation, neededRotation, elapsedTime / rotateTime);
                 elapsedTime += Time.deltaTime;
-                await Task.Yield();
+                await UniTask.Yield();
             }
             transform.localEulerAngles = neededRotation;
-            await Task.CompletedTask;
+            await UniTask.CompletedTask;
         }
 
         public void OnShowdown(CardModel cardModel) => photonView.RPC("ShowCard", RpcTarget.All, cardModel);

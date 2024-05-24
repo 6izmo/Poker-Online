@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace UIVisual
 {
-    [RequireComponent(typeof(Image))]
+    [RequireComponent(typeof(Image))] 
     public class SimpleSpinner : AppearSmoothly
     {
         [Header("Rotation")]

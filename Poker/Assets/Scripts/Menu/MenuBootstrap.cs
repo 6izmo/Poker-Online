@@ -1,6 +1,8 @@
 using Settings;
 using Utilities;
 using UnityEngine;
+using UnityEngine.LowLevel;
+using Cysharp.Threading.Tasks;
 
 namespace Menu
 {
@@ -11,13 +13,16 @@ namespace Menu
 		[SerializeField] private SettingsPresenter _settingsPresenter;
 		[SerializeField] private SettingsView _settingsView;
 
-		private void Start()
+        private void Start()
         {
-			SettingsModel settings = SettingsSaveLoadUtils.LoadSettingsData();
+            var loop = PlayerLoop.GetCurrentPlayerLoop();
+            PlayerLoopHelper.Initialize(ref loop);
+
+            SettingsModel settings = SettingsSaveLoadUtils.LoadSettingsData();
 			_settingsPresenter.Init(_settingsView, settings);
-			_settingsView.Init(settings);
+			_settingsView.Init(settings); 
 
 			new MenuPresenter(_menuView);
 		}
-	}
+    }
 }

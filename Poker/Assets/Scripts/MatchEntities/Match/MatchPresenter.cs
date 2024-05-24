@@ -5,7 +5,7 @@ using Photon.Pun;
 using UnityEngine;
 using Combination;
 using Photon.Realtime;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using Phase = PokerMatch.MatchModel.MatchPhase;
 
@@ -38,8 +38,8 @@ namespace PokerMatch
         public async void StartMatch()   
         {
             SetPlayerInPlaces();
-            _matchView.ActivateView();
-            await Task.Delay(_timeOperation);
+            _matchView.SetActiveView(true);
+            await UniTask.Delay(_timeOperation);
 
             if(PhotonNetwork.IsMasterClient)
                 _matchService.SetMatchPhasePun(Phase.NewDistribution);   
@@ -132,14 +132,14 @@ namespace PokerMatch
 			if (!PhotonNetwork.IsMasterClient)
                 return;  
 
-			await Task.Delay(_timeOperation);
+			await UniTask.Delay(_timeOperation);
 
 			Player winner = _matchModel.PlayersCount == 1 ? _matchModel.CurrentPlayers[0] : _matchModel.GetWinner();
 
             _matchService.ChangePlayerColor(winner, new ColorModel(new Color(1, 0.5f, 0)));
             _matchService.TransferMoneyToPlayer(winner);  
 
-			await Task.Delay(_timeBetweenMatch); 
+			await UniTask.Delay(_timeBetweenMatch); 
 
 			_matchService.ChangePlayerColor(winner, new ColorModel(Color.white)); 
 			PhotonNetwork.DestroyAll(); 

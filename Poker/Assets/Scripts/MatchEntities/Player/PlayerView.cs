@@ -4,7 +4,8 @@ using System;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+
 
 namespace Players
 {
@@ -70,7 +71,7 @@ namespace Players
                 value = (int)Mathf.Lerp(_playerModel.LastAmountMoney, money, elapsedTime / animationTime);
                 elapsedTime += Time.deltaTime;
                 _moneyText.text = $"{value}$";
-                await Task.Yield();
+                await UniTask.Yield();
             }
             _moneyText.text = $"{money}$";
             _playerModel.LastAmountMoney = money;

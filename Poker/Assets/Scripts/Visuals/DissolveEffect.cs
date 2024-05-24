@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 public class DissolveEffect : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class DissolveEffect : MonoBehaviour
         _image.material = _dissolveMaterial;
     }
 
-    public async Task Dissolve(bool isAppearance)
+    public async UniTask Dissolve(bool isAppearance)
     {
         _dissolved = false;
         float fadeMaterial = isAppearance ? 0 : 1f;
@@ -36,11 +36,11 @@ public class DissolveEffect : MonoBehaviour
             fadeMaterial += percent * Time.deltaTime;
             _elapsedTime += Time.deltaTime;
             _image.material.SetFloat(Fade, fadeMaterial);
-            await Task.Yield();
+            await UniTask.Yield();
         }
         _elapsedTime = 0f;
         _image.material.SetFloat(Fade, fadeAbs);
         _dissolved = true;
-        await Task.CompletedTask;
+        await UniTask.CompletedTask;
     }
 }

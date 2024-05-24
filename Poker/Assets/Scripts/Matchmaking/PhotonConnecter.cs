@@ -40,7 +40,7 @@ public class PhotonConnecter : PersistentSingletonPun<PhotonConnecter>
     public override void OnConnectedToMaster()
     {
         if (!PhotonNetwork.InLobby)
-            PhotonNetwork.JoinLobby();  
+            PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedRoom() => SceneTransition.SwitchToScene("Game");

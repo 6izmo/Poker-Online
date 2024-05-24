@@ -1,6 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Cards
 {
@@ -24,7 +24,7 @@ namespace Cards
 			PhotonNetwork.AddCallbackTarget(this);
         }
 
-        public async Task Open(bool showCard = false)
+        public async UniTask Open(bool showCard = false)
         {
 			_audioSource.PlayOneShot(_cardData.CardOpenClip);
 			await _cardView.RotateCard(_cardModel.IsOpened, showCard);
@@ -61,7 +61,7 @@ namespace Cards
             await SetPosition(startPosition, destinationPosiiton, angle);
         }
 
-        public async Task SetPosition(Vector2 startPosition, Vector2 destinationPosition, float angle)
+        public async UniTask SetPosition(Vector2 startPosition, Vector2 destinationPosition, float angle)
         {
             float elapsedTime = 0f;
             float animaitonRotateTime = 0.55f;
@@ -74,11 +74,11 @@ namespace Cards
                 transform.rotation = Quaternion.Euler(0, 0, zAngle);
                 transform.position = Vector3.Lerp(startPosition, destinationPosition, elapsedTime / animaitonRotateTime);
                 elapsedTime += Time.deltaTime;
-                await Task.Yield();
+                await UniTask.Yield();
             }
             transform.rotation = Quaternion.Euler(0, 0, angle);
             transform.position = destinationPosition;
-            await Task.CompletedTask;
+            await UniTask.CompletedTask;
         }
 
         public void OnDestroy() => PhotonNetwork.RemoveCallbackTarget(this);

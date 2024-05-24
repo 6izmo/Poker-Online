@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace PokerMatch
 {
@@ -25,7 +25,7 @@ namespace PokerMatch
         private void Awake()
 		{
             _cross.Deactivate();
-			_chatButton.onClick.AddListener(() => SetActiveChat());
+			_chatButton.onClick.AddListener(() => SetActiveChat()); 
 		}
 
         private void SetActiveChat()
@@ -37,12 +37,12 @@ namespace PokerMatch
 
         public void OnEndMatch(string winnerName)  
         {
-            _cardDeck.Deactivate();
+            SetActiveView(false);
             _congratulations.Activate();
             _congratulations.text = winnerName.Equals(PhotonNetwork.LocalPlayer.NickName) ? "You Win!" : "Game Over " + '\n' + winnerName + " Won";
 		}
 
-        public async Task SetButtonBlind(Vector2 smallPosition, Vector2 bigPosition)
+        public async UniTask SetButtonBlind(Vector2 smallPosition, Vector2 bigPosition)
         {
             Vector2 smallStart = _smallBlinds.transform.position;
             Vector2 bigStart = _bigBlinds.transform.position;
@@ -52,18 +52,18 @@ namespace PokerMatch
                 _smallBlinds.transform.position = Vector3.Lerp(smallStart, smallPosition, elapsedTime / _translateTime);
                 _bigBlinds.transform.position = Vector3.Lerp(bigStart, bigPosition, elapsedTime / _translateTime);
                 elapsedTime += Time.deltaTime;
-                await Task.Yield();   
+                await UniTask.Yield();   
             }
             _smallBlinds.transform.position = smallPosition;  
             _bigBlinds.transform.position = bigPosition;
-            await Task.CompletedTask;  
+            await UniTask.CompletedTask;  
         }
 
-        public void ActivateView()
+        public void SetActiveView(bool active)
         {
-            _cardDeck.Activate();
-            _smallBlinds.Activate();
-            _bigBlinds.Activate();
+            _cardDeck.gameObject.SetActive(active);
+            _smallBlinds.gameObject.SetActive(active);
+            _bigBlinds.gameObject.SetActive(active);
         }
 
         public void ShowPlayersInPlaces(PlayerInfoView playerItem, PlayerItemPosition playerItemPosition)

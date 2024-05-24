@@ -3,7 +3,7 @@ using System;
 using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace PokerMatch
@@ -17,7 +17,7 @@ namespace PokerMatch
 		private static int _timeDelay = 750;
         private static int _currentCountCard = 0;
 
-        public static async Task StartDealing(CardData cardData, List<Player> players)  
+        public static async UniTask StartDealing(CardData cardData, List<Player> players)  
         {
             if (!PhotonNetwork.IsMasterClient)
                 return;
@@ -34,10 +34,10 @@ namespace PokerMatch
 					object[] content = new object[] { EventCode.AddCard, player, newCardModel, cardData.CardViewPrefab.name, j };
 					RaiseEventOptions eventOptions = new RaiseEventOptions() { Receivers = ReceiverGroup.All };
                     PhotonNetwork.RaiseEvent((byte)EventCode.Dealing, content, eventOptions, ExitGames.Client.Photon.SendOptions.SendUnreliable);
-					await Task.Delay(_timeDelay);
+                    await UniTask.Delay(_timeDelay);
                 }
 			}
-			await Task.CompletedTask;
+            await UniTask.CompletedTask;
         }
 
         public static async void TableDealing(CardData cardData, int countCard)
@@ -56,7 +56,7 @@ namespace PokerMatch
                 cardPresenter.Init(newCardModel);
                 tableCards.Add(cardPresenter);
                 tableModel.Add(newCardModel);
-                await Task.Delay(_timeDelay);
+                await UniTask.Delay(_timeDelay);
             }
             for (int i = 0; i < tableCards.Count; i++)
                 await tableCards[i].Open(true);

@@ -1,5 +1,6 @@
 using TMPro;
 using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +15,14 @@ namespace RoomList
 		[SerializeField] private Button _joinRandomButton;
 		[Space]
         [SerializeField] private TMP_InputField _inputField;
+        [SerializeField] private TextMeshProUGUI _placeHolder;
 
         public event Action<string> OnRoomCreated;
         public event Action<string> OnRoomJoined;
         public event Action OnRoomRandomJoined;
-
         public event Action OnExit;
+
+        private Tween _tweenShake;
 
         private bool _isJoinedByName = false;
 
@@ -32,6 +35,15 @@ namespace RoomList
 
         private void OnSendButton()
         {
+            if (string.IsNullOrEmpty(_inputField.text))
+            {
+                _placeHolder.color = Color.red;   
+                if(_tweenShake != null && _tweenShake.IsPlaying()) 
+                    _tweenShake.Kill(); 
+                _tweenShake = _placeHolder.rectTransform.DOShakePosition(1f);
+                return;
+            }
+
             if (_isJoinedByName)
                 OnRoomJoined?.Invoke(_inputField.text);
             else

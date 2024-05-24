@@ -2,7 +2,7 @@ using System;
 using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace PlayerList
@@ -32,7 +32,7 @@ namespace PlayerList
         public async void UpdateReadyCondition(bool condition)
         {
             photonView.RPC("RpcSetReadyCondition", RpcTarget.AllBufferedViaServer, PhotonNetwork.LocalPlayer, condition);
-            await Task.Delay(300);
+            await UniTask.Delay(300);
             photonView.RPC("CheckReadyConditions", RpcTarget.All);
         }
 
@@ -44,6 +44,7 @@ namespace PlayerList
             if (!_playerListModel.GetPlayersReadyCondition())
                 return;
 
+            PhotonNetwork.CurrentRoom.IsOpen = false;    
             OnAllPlayersReady?.Invoke(_playerListModel.PlayerItems);
         }
 
