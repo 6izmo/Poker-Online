@@ -1,17 +1,18 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <meta charset="utf-8" />
-  <title>HTML5</title>
-  <!--[if IE]>
-   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-  <style>
-   article, aside, details, figcaption, figure, footer,header,
-   hgroup, menu, nav, section { display: block; }
-  </style>
- </head>
- <body>
-  <p>Привет, мир</p>
- </body>
-</html>
+# Texas hold'em (Poker Online)
+
+Техасский холдем — это разновидность покера, которая является наиболее популярной и широко распространенной формой игры в покер.
+
+Этот проект был создан мной в качестве освоения популярного мулитиплеерного сервиса - Photon, а именно Photon PUN 2.    
+Хотя и считается версия PUN 2 устаревшей, она до сих пор хорошо работает и относительно проста в реализации, из-за чего я выбрал ее.
+
+Архитектурой же проекта послужил паттерн семейства MV*, а именно MVP ( Model View Presenter).               
+В проекте можно увидеть разные его виды: где-то было удобнее использовать Supervising Controller, где-то Passive view.
+
+Проект небольшой и некоммерческий, поэтому присутсвуют решения для быстрой и простой реализации (например Bootstrup класссы в качестве внедрения зависимостей)
+
+### [Игра](https://glzmo.itch.io/poker) доступна на Itch.io
+
+ Чтобы поиграть нужно минимум два игрока, максимум четыре.          
+ Вид игры - турнир: каждый игрок начинает с одинаковой суммой, игрок, проигравший все,  выбывает.
+### Спасибо, что прочитали это!
+![screenshot](https://img.itch.zone/aW1hZ2UvMjYyOTI5Mi8xNjI1MzA3Ni5wbmc=/original/t8mebn.png)
