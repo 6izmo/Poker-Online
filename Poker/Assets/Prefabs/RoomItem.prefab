@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1280, y: 100}
+  m_AnchoredPosition: {x: -0.0036777, y: 0}
+  m_SizeDelta: {x: 1304.8, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3430321878408789456
 CanvasRenderer:
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9a9f6b9d76e06054e8dd89bf95d08a0e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0f0a7cb219b8b6145a68d6fe6bec5d9a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -131,6 +131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e9c14facf0555c43afee809f5bbf039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _outline: {fileID: 4893704747069440212}
+  _defaultColor: {r: 0, g: 0.3019608, b: 1, a: 1}
   _roomName: {fileID: 56938349726465135}
   _playersCount: {fileID: 3166562128965392271}
 --- !u!222 &3254678332442703295

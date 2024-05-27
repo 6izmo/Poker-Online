@@ -1,4 +1,5 @@
 using Photon.Pun;
+using UnityEngine;
 using Photon.Realtime;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ namespace RoomList
 
             _listView.OnRoomCreated += _listModel.CreateRoom;
             _listView.OnExit += Exit;
-            _listView.OnRoomJoined += JoinByName;
+            _listView.OnRoomJoined += JoinByName; 
             _listView.OnRoomRandomJoined += JoinRandom;
 
             PhotonConnecter.Instance.OnRoomListUpdated += UpdateRooms;

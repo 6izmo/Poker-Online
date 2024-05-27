@@ -12,7 +12,10 @@ public class Chat : SingletonPun<Chat>
     public void SendMessage()
     {
         if (_inputField.text.Length > 0)
+        {
             photonView.RPC("SendMessagePun", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName, _inputField.text);
+            _inputField.text = string.Empty; 
+        }    
     }
 
     [PunRPC]

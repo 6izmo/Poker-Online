@@ -2,7 +2,7 @@ using System;
 
 namespace Combination
 {
-	public class CombinationModel : IComparable<CombinationModel>
+	public class CombinationModel : IComparable<CombinationModel>, IEquatable<CombinationModel>
 	{
 		public int CardWeight { get; private set; }
         public CombinationType CombinationType { get; private set; }
@@ -29,29 +29,15 @@ namespace Combination
 			return result;   
 		}
 
-		public static object Deserialize(byte[] data) => new CombinationModel(data[0], (CombinationType)(int)data[1], data[2]);
+        public bool Equals(CombinationModel other) => CombinataionRank == other.CombinataionRank && CombinationType == other.CombinationType;
+
+        public static object Deserialize(byte[] data) => new CombinationModel(data[0], (CombinationType)(int)data[1], data[2]);
 
 		public static byte[] Serialize(object customType)
 		{
 			var myType = (CombinationModel)customType;
 			return new byte[] {(byte)myType.CardWeight, (byte)myType.CombinationType, (byte)myType.CombinataionRank };
 		}
-
-		public override string ToString()
-		{
-			string rank = $"{CombinataionRank + 1}"; 
-
-			if (CombinataionRank == 0)
-				rank = "Туз";
-			if (CombinataionRank == 12)
-				rank = "Король";
-			if (CombinataionRank == 11)
-				rank = "Дама";  
-			if (CombinataionRank == 10)
-				rank = "Валет";
-
-			return $"Weight - {CardWeight};  {CombinationType}-{rank}";
-		}
-	}  
+    }  
 }
 		

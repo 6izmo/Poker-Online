@@ -30,22 +30,6 @@ namespace Cards
         {
             var myType = (CardModel)customType;
             return new byte[] {(byte)myType.Suit, (byte)myType.Rank };
-        }
-
-		public override string ToString()
-		{
-            string rank = $"{Rank + 1}";
-
-            if (Rank == 0)
-                rank = "Туз";
-            if (Rank == 12)
-                rank = "Король";
-            if (Rank == 11)
-                rank = "Дама";
-            if (Rank == 10)
-                rank = "Валет";
-
-            return $"{rank}-{Suit}"; 
-		}
+        }        
 	}
 }
